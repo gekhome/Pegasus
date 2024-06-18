@@ -1,0 +1,188 @@
+﻿@model Pegasus.Models.UserTeacherViewModel
+
+@{
+    ViewBag.Title = "Είσοδος Εκπαιδευτικού";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <style>
+        .k-textbox {
+            display: block;
+            width: 100%;
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.428571429;
+            color: #555555;
+            vertical-align: middle;
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        }
+
+        .k-textbox:focus {
+            border-color: #66afe9;
+            outline: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <p style="padding:20px 10px 20px 10px"></p>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true)
+            <fieldset>
+                <legend style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Είσοδος εκπαιδευτικού</legend>
+                <table class="col-md-8" style="border:solid;border-width:thin;margin:10px 0px 10px 0px">
+                    <tr>
+                        <th style="background-color:#4f81bd;padding-left:20px" >
+                            <p></p>
+                            <img src="~/Images/metro/user_security-white.png" width="60" height="60" style="margin:0px 20px 0px 10px" />
+                            <font style="font-family:'Segoe UI';font-size:xx-large;color:white;">Είσοδος</font>
+                            <p></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p></p>
+                            <div class="form-group" style="margin-left:1px">
+                                @Html.LabelFor(model => model.USERNAME, new { @class = "control-label col-md-4" })
+                                <div class="col-md-6">
+                                    @Html.EditorFor(model => model.USERNAME)
+                                    @Html.ValidationMessageFor(model => model.USERNAME)
+                                </div>
+                            </div>
+                            <p></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p></p>
+                            <div class="form-group" style="margin-left:1px">
+                                @Html.LabelFor(model => model.PASSWORD, new { @class = "control-label col-md-4" })
+                                <div class="col-md-6">
+                                    @Html.EditorFor(model => model.PASSWORD)
+                                    @Html.ValidationMessageFor(model => model.PASSWORD)
+                                </div>
+                            </div>
+                            <p></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p></p>
+                            <img id="imgCaptcha" border="0" hspace="0" src="" width="370" height="70" style="margin-left:40px"><br/>
+                            <div class="form-group" style="margin-left:1px;margin-top:10px">
+                                @Html.LabelFor(model => model.CAPTCHATEXT, new { @class = "control-label col-md-5" })
+                                <div class="col-md-3">
+                                    @Html.EditorFor(model => model.CAPTCHATEXT)
+                                    @Html.ValidationMessageFor(model => model.CAPTCHATEXT)
+                                </div>
+                            </div>
+                            <p></p>
+                        </td>
+                    </tr>
+                </table>
+                              
+                <div class="form-group">
+                    <div style="float:left;" class="col-md-12">
+                        <input style="font-family:'Segoe UI';font-size:large" type="submit" value="Είσοδος" class="btn btn-default" />
+                        <span style="margin:0px 5px 5px 5px;font-family:'Segoe UI';font-size:18px">
+                            @Html.ActionLink("Εγγραφή", "Register", "USER_TEACHERS", null,
+                                new { @class = "btn btn-default", style = "font-size:18px" })
+                        </span>
+                        <span style="margin:0px 5px 5px 5px;font-family:'Segoe UI';font-size:18px">
+                            @Html.ActionLink("Ανάκτηση κωδικού", "Manage", "USER_TEACHERS", null,
+                                new { @class = "btn btn-default", style = "font-size:18px" })
+                        </span>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    }
+    <div class="row" style="margin-top:10px;margin-left:4px;max-width:620px">
+        @(Html.Kendo().PanelBar()
+        .Name("Help")
+        .Items(items =>
+        {
+            items.Add()
+                .Text("Οδηγίες (για αρχάριους)")
+                .Selected(true)
+                .Expanded(false)
+                .Content(
+                @<text>
+                    <div style="margin-left:6px;margin-right:6px">
+                        <img src="~/Images/metro/orderedList1.png" />
+                        <font style="font-family:'Segoe UI';font-size:large">Τι είναι το όνομα χρήστη;</font>
+                        <p>
+                            Το 'όνομα χρήστη' (Username) είναι ένα ψευδώνυμο που χρησιμοποιείται για να αποκτήσει
+                            ένας χρήστης πρόσβαση σε ένα σύστημα ηλεκτρονικού υπολογιστή.
+                            Τα ονόματα χρήστη και οι κωδικοί πρόσβασης απαιτούνται στα συστήματα πολλών χρηστών.
+                            Στα περισσότερα τέτοια συστήματα οι χρήστες μπορούν να επιλέξουν
+                            το δικό τους όνομα χρήστη και κωδικό πρόσβασης.
+                        </p>
+                        <p>
+                            Συνήθως πρέπει να δίνεται με λατινικούς πεζούς χαρακτήρες. Ακολουθούν ενδεικτικά παραδείγματα:
+                        </p>
+                        <p>
+                            Αν το κανονικό μας όνομα είναι π.χ. Νίκος Παπαδημητρίου το όνομα χρήστη μπορει να είναι:
+                        </p>
+                        <p>
+                            n.papadimitriou ή npapad ή NikosPap ή npapadimitriou ή οτιδήποτε άλλο, τέτοιο ώστε να το θυμάστε εύκολα.
+                        </p>
+                        <p></p>
+                        <img src="~/Images/metro/orderedList2.png" />
+                        <font style="font-family:'Segoe UI';font-size:large">Τι είναι ο κωδικός πρόσβασης;</font>
+                        <p>
+                            O κωδικός πρόσβασης (Password) είναι ένα σύνολο μυστικών χαρακτήρων ή λέξεων που απαιτείται να δοθούν
+                            για να αποκτήσει κάποιος πρόσβαση σε έναν υπολογιστή ή στα αρχεία και τα προγράμματα ενός συστήματος.
+                            Οι κωδικοί πρόσβασης εξασφαλίζουν ότι μόνο οι εξουσιοδοτημένοι χρήστες μπορούν να έχουν πρόσβαση
+                            σε συγκεκριμένες πληροφορίες.
+                        </p>
+                        <p>
+                            Και αυτό, συνήθως δίνεται με λατινικούς χαρακτήρες (πεζούς ή συνδυασμό πεζών/κεφαλαίων) και άλλα
+                            σύμβολα του πληκτρολογίου. Για την εφαρμογή 'Pegasus' μπορείτε να εισάγετε μέχρι 20 χαρακτήρες. Για
+                            δική σας ευκολία, όμως, καλόν είναι να μη ξεπερνάτε τους 6 χαρακτήρες.
+                        </p>
+                    </div>
+                </text>);
+        })
+        )
+    </div>
+</body>
+</html>
+@*@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}*@
+
+<script type="text/javascript" language="javascript">
+     $(document).ready(function () {
+         loadCaptcha();
+     });
+     function loadCaptcha() {
+         $.ajax({
+             type: 'GET',
+             url: '@Url.Action("generateCaptcha", "USER_TEACHERS")',
+             contentType: "application/json; charset=utf-8",
+             dataType: "json",
+             cache: false,
+             success: function (data) { $("#imgCaptcha").attr('src', data); },
+             error: function (data) { alert("Σφάλμα κατά τη φόρτωση της εικόνας.") }
+         });
+     }
+</script>

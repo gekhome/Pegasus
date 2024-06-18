@@ -1,0 +1,217 @@
+﻿@model IEnumerable<Pegasus.Models.AitisisGridViewModel>
+@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Λίστα Αιτήσεων";
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+<div class="row" style="margin:5px 5px 5px 5px">
+    <div style="margin:5px 20px 5px 20px">
+        <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c;float:left">
+            <font style="color:#494949;font-family:'Segoe UI'">Διαχείριση αιτήσεων εκπαιδευτικού</font>
+        </span>
+        <span style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "TEACHERS", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+    </div>
+</div>
+
+<div class="body-content" style="margin:5px 20px 5px 20px">
+    @(Html.Kendo().Grid(Model)
+        .Name("AitisisGrid")
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.AITISI_PROTOCOL).Width(30);
+            columns.ForeignKey(x => x.EIDIKOTITA, (IEnumerable<Pegasus.Models.SYS_EIDIKOTITESViewModel>)ViewData["AitisiEidikotites"], "EIDIKOTITA_ID", "EIDIKOTITA_DESC").Width(60);
+            columns.ForeignKey(x => x.SCHOOL_ID, (IEnumerable<Pegasus.Models.SYS_SCHOOLSViewModel>)ViewData["schools"], "SCHOOL_ID", "SCHOOL_NAME").Width(30);
+            columns.ForeignKey(x => x.PERIFERIA_ID, (IEnumerable<Pegasus.DAL.SYS_PERIFERIES>)ViewData["AitisiPeriferies"], "PERIFERIA_ID", "PERIFERIA_NAME").Width(60);
+            columns.Command(command => { command.Destroy().Text("Διαγραφή"); }).Width(20);
+            columns.Template(@<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("AitisiEdit2", "AITISIS") + "?AITISI_ID=#=AITISI_ID#'><span class=\"k-icon k-edit\"></span>Επεξεργασία</a>"
+            ).Width(25);
+        })
+        .HtmlAttributes(new { style="font-size:14px" })
+        .Filterable()
+        .Selectable()
+        .Scrollable(scr => scr.Height(220))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(3))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .PageSize(20)
+        .ServerOperation(false)
+        .Events(events => { events.Error("error_handler1"); })
+        .Model(model =>
+        {
+            model.Id(p => p.AITISI_ID);
+            //model.Field(p => p.canDelete);
+        })
+        .Read("Aitisis_Read", "AITISIS")
+        .Destroy("Aitisis_Destroy", "AITISIS")
+        )
+        .Events(events => events.Change("change"))
+    )
+</div>
+
+<div class="body-content" style="margin:5px 20px 5px 20px">
+    <font style="color:#494949;font-family:'Segoe UI';font-size:16px;font-weight:bold">Επιλογή σχολικών μονάδων αίτησης </font>
+    <font style="color:#494949;font-family:'Segoe UI';font-size:14px;font-style:italic">(πρέπει <u>πρώτα να επιλέξετε αίτηση</u> με κλικ επάνω στην επιθυμητή αίτηση)</font>
+</div>
+
+<div class="body-content" style="margin:5px 20px 5px 20px">
+    @(Html.Kendo().Grid<AITISI_SCHOOLSViewModel>()
+        .Name("SchoolsGrid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(x => x.SCHOOL_TYPE, (IEnumerable<SYS_SCHOOLTYPES>)ViewData["schooltypes"], "SCHOOL_TYPE_ID", "SCHOOL_TYPE").Width(50);
+            columns.ForeignKey(x => x.SCHOOL, (IEnumerable<SYS_SCHOOLSViewModel>)ViewData["schools"], "SCHOOL_ID", "SCHOOL_NAME").Width(60).EditorTemplateName("AitisiSchoolSelector");
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(40);
+        })
+        .ToolBar(toolBar =>
+        {
+            toolBar.Create();
+        })
+        .Filterable()
+        .AutoBind(false)
+        .Navigatable()
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(scr => scr.Height(200))
+        .HtmlAttributes(new { style = "display: block;font-size:14px" })
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(3))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(false)
+        .PageSize(20)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.ID);
+            model.Field(p => p.SCHOOL_TYPE).DefaultValue((int)ViewData["defaultSchoolType"]);
+            model.Field(p => p.SCHOOL).DefaultValue((int)ViewData["defaultSchool"]);
+        })
+        .Create(create => create.Action("Schools_Create", "AITISIS").Data("data"))
+        .Update(update => update.Action("Schools_Update", "AITISIS").Data("data"))
+        .Read(read => read.Action("Schools_Read", "AITISIS").Data("data"))
+        .Destroy(destroy => destroy.Action("Schools_Destroy", "AITISIS"))
+        .Events(events => events.Error("error_handler2"))
+        )
+    )
+
+</div>
+
+
+<script type="text/javascript">
+
+    function filterSchools() {
+        var masterGrid = $("#AitisisGrid").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        if (dataItem) {
+            return { aitisiID: dataItem.AITISI_ID };
+        }
+        else {
+            return { aitisiID: 0 };
+        }
+    }
+
+    function data() {
+        var masterGrid = $("#AitisisGrid").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        if (dataItem) {
+            return { aitisiID: dataItem.AITISI_ID };
+        }
+        else {
+            return { aitisiID: 0 };
+        }
+    }
+
+    function change(e) {
+        var dataItem = this.dataItem(this.select());
+        var aitisiId = dataItem.AITISI_ID;
+
+        $("#SchoolsGrid").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#SchoolsGrid").css("display", "block");
+    }
+
+    function error_handler1(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+            $("#AitisisGrid").data("kendoGrid").dataSource.read();
+        }
+    }
+
+    function error_handler2(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+            $("#SchoolsGrid").data("kendoGrid").dataSource.read();
+        }
+    }
+
+    function getEditId() {
+        var row = $(event.srcElement).closest("tr");
+        var grid = $(event.srcElement).closest("[data-role=grid]").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        return {
+            AITISI_ID: dataItem.AITISI_ID
+        };
+    }
+
+    function RefreshGrid(e) {
+        var grid = $("#AitisisGrid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function RefreshSchools(e) {
+        var grid = $("#SchoolsGrid").data("kendoGrid");
+        grid.dataSource.read();
+
+    }
+
+    //Disables/Enables edit/delete buttons based on each aitisi
+    function onDataBound(e) {
+        var grid = $("#AitisisGrid").data("kendoGrid");
+        var gridData = grid.dataSource.data();
+        //MessageBoxAlert(gridData.length);
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            //MessageBoxAlert(currentUid)
+            if (!gridData[i].canDelete) {
+                //MessageBoxAlert("hiding delete button");
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                //MessageBoxAlert(currenRow);
+                var editButton = $(currenRow).find(".k-grid-delete");
+                //MessageBoxAlert(editButton.html);
+                //editButton.hide();
+            }
+        }
+    }
+</script>
+
+
+
+
+

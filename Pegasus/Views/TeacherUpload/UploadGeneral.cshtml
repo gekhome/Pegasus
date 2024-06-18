@@ -1,0 +1,297 @@
+﻿@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Ανέβασμα δικαιολογητικών";
+    Layout = "~/Views/Shared/_LayoutUpload.cshtml";
+}
+
+<head>
+    <title></title>
+    <link href="@Url.Content("~/Content/mvcNotify.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/mvcNotify.js")" type="text/javascript"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.11.4/jquery-ui.js" type="text/javascript"></script>
+    <link href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+
+    <style>
+        .inline-picture {
+            float: left;
+            margin: 30px 30px 20px 30px;
+            text-align: center;
+        }
+
+        .inline-picture img {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+@Html.AntiForgeryToken()
+<div class="row" style="margin:5px 5px 5px 5px; margin-top:20px">
+    <div style="margin:5px 60px 5px 60px">
+        <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c;float:left">
+            <font style="color:#494949;font-family:'Segoe UI'">Μεταφόρτωση γενικών δικαιολογητικών</font>
+        </span>
+        <button class="btn btn-info" style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshMasterGrid()">Ανανέωση</button>
+        <button class="btn btn-primary" style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="showHelp()">Οδηγίες</button>
+    </div>
+</div>
+
+<div class="body-content" style="margin:10px 60px 5px 60px;">
+        @(Html.Kendo().Grid<UploadGeneralModel>()
+        .Name("Master")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(f => f.AitisiID, (IEnumerable<AITISIS>)ViewData["aitiseis"], "AITISI_ID", "AITISI_PROTOCOL").Width(30).Filterable(false);
+            columns.Bound(c => c.UploadDate).Width(20).Filterable(false);
+            columns.Bound(c => c.UploadSummary).Width(60);
+            columns.Bound(c => c.TeacherAFM).Width(20);
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(38);
+            columns.Template(
+                @<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("UploadGeneralForm", "TeacherUpload") + "?uploadId=#=UploadID#' target = _blank><span class=\"k-icon k-add\"></span>Ανέβασμα</a>"
+            ).Width(20);
+        })
+        .ToolBar(toolBar =>
+        {
+            toolBar.Create();
+        })
+        .HtmlAttributes(new { style="font-size:14px" })
+        .Editable(editable => editable.Mode(GridEditMode.InLine).DisplayDeleteConfirmation(true))
+        .Navigatable()
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(10))
+        .Selectable()
+        .Filterable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(260))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.UploadID);
+            model.Field(p => p.AitisiID).DefaultValue(ViewData["defaultAitisi"]);
+            model.Field(p => p.TeacherAFM).Editable(false);
+        })
+        .Create(create => create.Action("UploadGeneral_Create", "TeacherUpload"))
+        .Read(read => read.Action("UploadGeneral_Read", "TeacherUpload"))
+        .Update(update => update.Action("UploadGeneral_Update", "TeacherUpload"))
+        .Destroy(destroy => destroy.Action("UploadGeneral_Destroy", "TeacherUpload"))
+        .Events(events => events.Error("error_handler1"))
+        )
+        .Events(events => events.Change("change"))
+        )
+</div>
+
+<div class="body-content" style="margin:5px 60px 0px 60px;">
+    <label style="margin-left:10px;font-size:14px;font-weight:600;font-style:italic">Ανεβασμένα αρχεία και επαλήθευση μεταφόρτωσης (κουμπί 'Οδηγίες').</label>
+</div>
+
+<div class="body-content" style="margin:5px 60px 5px 60px;">
+        @(Html.Kendo().Grid<UploadGeneralFilesModel>()
+        .Name("Child")
+        .AutoBind(false)
+        .HtmlAttributes(new { style = "font-size:14px" })
+        .Navigatable()
+        .Filterable()
+        .Editable(editable => editable.Mode(GridEditMode.InLine).CreateAt(GridInsertRowPosition.Top))
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .Scrollable(scr => scr.Height(260))
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.FileID).Width(20).Hidden();
+            columns.Bound(c => c.FileName).Width(60).Filterable(false);
+            columns.Bound(c => c.Category).Width(40).Filterable(false);
+            columns.Bound(c => c.TeacherAFM).Width(20);
+            columns.Command(command => { command.Destroy(); command.Custom("\u13EB" + " Προβολή").Click("showPDF"); }).Width(35);
+            columns.Template(
+                @<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("DownloadGeneralFile", "TeacherUpload") + "?file_id=#=FileID#'><span class=\"k-icon k-update\"></span>Κατέβασμα</a>"
+            ).Width(20);
+        })
+        .DataSource(ds => ds
+            .Ajax()
+            .Batch(false)
+            .PageSize(20)
+            .ServerOperation(false)
+            .Model(model =>
+            {
+                model.Id(p => p.FileID);
+            })
+            .Read(read => read.Action("UploadGeneralFiles_Read", "TeacherUpload").Data("data"))
+            .Destroy(destroy => destroy.Action("UploadGeneralFiles_Destroy", "TeacherUpload"))
+            .Events(events => events.Error("error_handler2"))
+        )
+        )
+    </div>
+
+<div id="modalWindow">
+    <div class="inline-picture">
+        <img src='@Url.Content("~/Images/other/file-upload.jpg")' height="260" width="380" alt="Στοιχεία μεταφόρτωσης" />
+        Στοιχεία μεταφόρτωσης αρχείων
+    </div>
+    <p style="margin-top:10px">
+        Στο πάνω πλέγμα δημιουργούμε μία εγγραφή στην οποία καταχωρούμε μία από τις
+        αιτήσεις που κάνουμε (αν είναι πάνω από μία) και μια σύντομη περιγραφή για το αρχείο, π.χ.
+        "Φωτοτυπία δελτίου ταυτότητας". Αποθηκεύουμε την εγγραφή.
+    </p>
+    <p>
+        Πατάμε το κουμπί "Ανέβασμα" με το οποίο ανοίγει η καρτέλα μεταφόρτωσης στην οποία
+        επιλέγουμε από τον υπολογιστή μας τα σκαναρισμένα έντυπα. Μπορούμε να επιλέξουμε
+        πολλά έγγραφα ταυτόχρονα για μεταφόρτωση (οδηγίες υπάρχουν στην καρτέλα μεταφόρτωσης).
+    </p>
+    <p>
+        Στη σελίδα αυτή δημιουργούμε <b>μία</b> εγγραφή για κάθε κατηγορία δικαιολογητικών. Με αυτή
+        συσχετίζονται όλα τα έντυπα που θα επιλέξουμε στην καρτέλα μεταφόρτωσης.
+    </p>
+    <p>
+        Αφού γίνει η μεταφόρτωση, τα ανεβασμένα αρχεία εμφανίζονται στο κάτω πλέγμα της σελίδας αυτής.
+        Για την εμφάνιση των ανεβασμένων εγγράφων, στο κάτω πλέγμα, πρέπει να κάνουμε κλικ
+        επάνω στη γραμμή με την περιγραφή του πάνω πλέγματος, οπότε εμφανίζεται χρωματισμένη,
+        δηλαδή επιλεγμένη. Η εικόνα απεικονίζει τον ορθό τρόπο καταχώρησης/μεταφόρτωσης.
+    </p>
+    <p>
+        Για να <b>επαληθεύσετε</b> ότι έχουν ανέβει τα αρχεία επιτυχώς πατάτε τα κουμπιά "Προβολή" και "Κατέβασμα" στο<br />
+        κάτω πλέγμα της σελίδας δίπλα στο κάθε αρχείο. Εάν το αρχείο κατεβαίνει ή προβάλλεται έχει γίνει επιτυχής<br />
+        μεταφόρτωση. Εάν εμφανιστεί μήνυμα σφάλματος δεν έγινε η μεταφόρτωση, οπότε διαγράφετε την εγγραφή<br />
+        στο κάτω πλέγμα και επαναλαμβάνετε τη διαδικασία μεταφόρτωσης για το συγκεκριμένο αρχείο ή αρχεία.<br />
+    </p>
+    <div style="margin-left:0px;margin-top:20px;text-align:center;">
+        <button id="close" class="k-button" style="margin-left:5px">Κλείσιμο</button>
+    </div>
+</div>
+
+<div id="dialog" style="display: none"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        wnd = $("#modalWindow").kendoWindow({
+            title: "Οδηγίες καταχώρησης",
+            modal: true,
+            visible: false,
+            resizable: false,
+            height: 530,
+            width: 800
+        }).data("kendoWindow");
+
+    });
+
+    function showHelp() {
+        // Open user-dialog window
+        wnd.center().open();
+
+        $("#close").click(function () {
+            wnd.close();
+        });
+
+    }
+
+    function RefreshMasterGrid(e) {
+        var grid = $("#Master").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function RefreshChildGrid(e) {
+        var grid = $("#Child").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function change(e) {
+        var dataItem = this.dataItem(this.select());
+        var uploadID = dataItem.UploadID;
+
+        $("#Child").data("kendoGrid").dataSource.read({ uploadId: uploadID });
+        $("#Child").css("display", "block");
+    }
+
+    function data() {
+        var masterGrid = $("#Master").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        if (dataItem) {
+            return { uploadId: dataItem.UploadID };
+        }
+        else {
+            return { uploadId: 0 };
+        }
+    }
+
+    function error_handler1(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+        }
+        $("#Master").data("kendoGrid").dataSource.read();
+    }
+
+    function error_handler2(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+        }
+        $("#Child").data("kendoGrid").dataSource.read();
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    function showPDF(e) {
+        e.preventDefault();
+        var grid = this;
+        var row = $(e.currentTarget).closest("tr");
+        var data = this.dataItem(row);
+
+        var currentDomain = '@Url.Content("~")';
+        var url = currentDomain + "Uploads/Documents/" + data.TeacherAFM + "/";
+        fileName = data.FileName;
+
+        $("#dialog").dialog({
+            modal: true,
+            title: fileName,
+            width: 860,
+            height: 700,
+            buttons: {
+                Κλείσιμο: function () {
+                    $(this).dialog('close');
+                }
+            },
+            open: function () {
+                var object = "<object data=\"{FileName}\" type=\"application/pdf\" width=\"800px\" height=\"600px\">";
+                object += "Το αρχείο που ζητήθηκε δεν βρέθηκε ή δεν έχει την κατάλληλη μορφή για προβολή.";
+                object += "</object>";
+                object = object.replace(/{FileName}/g, url + fileName);
+                $("#dialog").html(object);
+            }
+        });
+    }
+
+</script>
+

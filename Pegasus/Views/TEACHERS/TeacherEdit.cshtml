@@ -1,0 +1,22 @@
+﻿@model Pegasus.Models.TeacherViewModel
+
+@{
+    ViewBag.Title = "Στοιχεία εκπαιδευτικού";
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+    string AFM = Model.AFM;
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.EditorForModel("TeacherEditor")
+
+    if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger alert-dismissible body-content" role="alert" style="margin:10px 60px 10px 60px">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>@Html.ValidationSummary()</strong>
+        </div>
+    }
+}

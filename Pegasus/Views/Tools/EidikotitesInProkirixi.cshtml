@@ -1,0 +1,178 @@
+﻿@model IEnumerable<Pegasus.Models.ProkirixisEidikotitesViewModel>
+@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Ειδικότητες προκήρυξης";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string schoolYear = ViewData["schoolYearText"].ToString();
+    string protocol = ViewData["prokirixiProtocol"].ToString();
+    string displayInfo = schoolYear + ": " + protocol;   
+}
+<style>
+    .k-grid {
+        font-size: 11px;
+    }
+</style>
+
+@Html.AntiForgeryToken()
+<div class="page-header" style="margin:10px 30px 5px 30px;background-color:#1D7CAE;padding:4px 4px 4px 4px;min-height:44px">
+    <label style="font-size:14px;font-weight:bold;color:white">Προκήρυξη για μεταφορά: </label>
+    @(Html.Kendo().DropDownList()
+        .Name("ddlProkirixi")
+        .DataTextField("PROTOCOL")
+        .DataValueField("ID")
+        .HtmlAttributes(new { style = "width:220px;font-size:14px;font-weight:600;margin-top:2px" })
+        .OptionLabel("Επιλογή προκήρυξης...")
+        .AutoBind(true)
+        .Enable(true)
+        .DataSource(source => { source.Read(read => { read.Action("GetProkirixeis", "Tools"); }); })
+    )
+    <font style="color:white;margin-left:10px;font-family:'Segoe UI';">
+        @Html.Label("", "Τρέχουσα προκήρυξη >" + displayInfo, new { @style = "font-family:'Segoe UI';font-style:normal;font-size:14px" })
+    </font>
+    <span style="margin:0px 5px 0px 5px;float:right;font-family:'Segoe UI';">@Html.ActionLink("Επιστροφή", "Index", "Admin", null, new { @class = "btn btn-default", style = "font-size:14px" })</span>
+    <span style="margin:0px 5px 0px 5px;float:right;font-family:'Segoe UI';">@Html.ActionLink("Εκτύπωση", "EidikotitesProkirixiPrint", "Tools", null, new { @class = "btn btn-default", style = "font-size:14px", target = "_blank" })</span>
+    <button class="btn btn-default" style="margin:0px 5px 0px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="TransferEidikotites()">Μεταφορά</button>
+</div>
+
+<div class="body-content" style="margin:5px 30px 5px 30px">
+    @(Html.Kendo().Grid<SYS_SCHOOLSViewModel>()
+        .Name("Master")
+        .Columns(columns =>
+        {
+            columns.Bound(e => e.SCHOOL_NAME).Width(90).Width(40).Groupable(false);
+            columns.ForeignKey(f => f.SCHOOL_PERIFERIA_ID, (IEnumerable<SYS_PERIFERIES>)ViewData["periferies"], "PERIFERIA_ID", "PERIFERIA_NAME").Groupable(true).Width(80);
+        })
+        .HtmlAttributes(new { style="font-size:14px" })
+        .Filterable()
+        .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+        .Groupable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(260))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .PageSize(40)
+            .Model(model =>
+            {
+                model.Id(h => h.SCHOOL_ID);
+                model.Field(h => h.SCHOOL_ID).Editable(false);
+            })
+                .Read(read => read.Action("SchoolsRead", "Tools"))
+            )
+        .Events(events => { events.Change("change"); })
+    )
+    @(Html.Kendo().Grid(Model)
+        .Name("Child")
+        .AutoBind(false)
+        .Columns(columns =>
+        {
+            columns.ForeignKey(f => f.EIDIKOTITA_ID, (IEnumerable<VD_EIDIKOTITES>)ViewData["Eidikotites"], "EIDIKOTITA_ID", "EIDIKOTITA_DESC").Width(120);
+            columns.Command(command => command.Destroy().Text("Διαγραφή")).Width(20);
+        })
+
+        .ToolBar(toolBar =>
+        {
+            toolBar.Create();
+            toolBar.Save().HtmlAttributes(new { @class = "k-button-success" });
+        })
+        .HtmlAttributes(new { style = "font-size:14px" })
+        .Filterable()
+        .Editable(editable => editable.Mode(GridEditMode.InCell).CreateAt(GridInsertRowPosition.Top))
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(300))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+            .Ajax()
+            .Batch(true)
+            .PageSize(40)
+            .ServerOperation(false)
+            .Model(model =>
+            {
+                model.Id(p => p.PSE_ID);
+                model.Field(p => p.PSE_ID).Editable(false);
+                model.Field(p => p.PROKIRIXI_ID);
+                model.Field(p => p.SCHOOL_ID);
+                model.Field(p => p.EIDIKOTITA_ID).DefaultValue(ViewData["defaultEidikotita"]);
+            })
+            .Create(create => create.Action("EidikotitesCreate", "Tools").Data("data"))
+            .Read(read => read.Action("EidikotitesRead", "Tools").Data("data"))
+            .Update(update => update.Action("EidikotitesUpdate", "Tools").Data("data"))
+            .Destroy("EidikotitesDestroy", "Tools")
+            .Events(events => events.Error("error_handler"))                       
+        )
+    )
+</div>
+
+<script>
+
+    function RefreshGrid(e) {
+        var grid = $("#Child").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function RefreshGridMaster(e) {
+        var grid = $("#Master").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function TransferEidikotites() {
+        var prokirixiID = $("#ddlProkirixi").data("kendoDropDownList").value();
+        if (prokirixiID) {
+            $.ajax({
+                url: '@Url.Action("CopyEidikotitesInProkirixi", "Tools")?sourceProkirixiID=' + prokirixiID,
+                type: 'GET',
+                data: "",
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data != "") MessageBoxAlert(data);
+                    $("#Child").data("kendoGrid").dataSource.read();
+                }
+            });
+        }
+        else {
+            MessageBoxAlert("Πρέπει να επιλέξετε μια προκήρυξη προέλευσης πρώτα.");
+        }
+    };
+
+    function change(e) {
+        var dataItem = this.dataItem(this.select());
+        var schId = dataItem.SCHOOL_ID;
+
+        $("#Child").data("kendoGrid").dataSource.read({ schoolId: schId });
+        $("#Child").css("display", "block");
+    }
+
+    function data() {
+        var masterGrid = $("#Master").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        if (dataItem) {
+            return { schoolId: dataItem.SCHOOL_ID };
+        }
+        else return { schoolId: 0 };
+    }
+
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+            $("#Child").data("kendoGrid").dataSource.read();
+        }
+    }
+
+</script>

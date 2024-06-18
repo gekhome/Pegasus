@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "Demo έκθεση";
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+}
+
+@section styles
+{
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2013.2.918/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2013.2.918/styles/kendo.silver.min.css" rel="stylesheet" />
+    <link href="~/ReportViewer/styles/ReportViewer-8.0.14.225.css" rel="stylesheet" />
+
+    <style>
+        #reportViewer1 {
+            position: absolute;
+            left: 5px;
+            right: 5px;
+            top: 5px;
+            bottom: 5px;
+            overflow: hidden;
+            font-family: Verdana, Arial;
+        }
+    </style>
+
+    <link href="~/ReportViewer/styles/ReportViewer-8.0.14.225.css" rel="stylesheet" />
+
+}
+
+@{
+    var typeReportSource = new Telerik.Reporting.TypeReportSource() { TypeName = typeof(Pegasus.Reports.DemoReport).AssemblyQualifiedName };
+}
+@using Telerik.ReportViewer.Mvc
+
+<div>
+    @(Html.TelerikReporting().ReportViewer()
+    .Id("reportViewer1")
+    .ServiceUrl(Url.Content("~/api/reports/"))
+    .TemplateUrl(Url.Content("~/ReportViewer/templates/telerikReportViewerTemplate.html"))
+    .ReportSource(typeReportSource)
+    .ViewMode(ViewModes.PRINT_PREVIEW)
+    .ScaleMode(ScaleModes.FIT_PAGE_WIDTH)
+    .PersistSession(true)
+    .Scale(1.0)
+    )
+</div>
+
+@section scripts
+{
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <!-- the scripts of the viewer -->
+    <!--kendo.all.min.js can be used as well instead of kendo.web.min.js and kendo.mobile.min.js-->
+    <script src="http://cdn.kendostatic.com/2013.2.918/js/kendo.web.min.js"></script>
+    <!--kendo.mobile.min.js - optional, if gestures/touch support is required-->
+    <script src="http://cdn.kendostatic.com/2013.2.918/js/kendo.mobile.min.js"></script>
+    <script src="~/ReportViewer/js/ReportViewer-8.0.14.225.js"></script>
+    <script src="~/ReportViewer/resources.el-GR.js"></script>
+
+
+    <script>
+        $('#invoiceId').change(function () {
+            var viewer = $("#reportViewer1").data("telerik_ReportViewer");
+            viewer.reportSource({
+                report: viewer.reportSource().report,
+                parameters: { OrderNumber: $(this).val() }
+            });
+            viewer.refreshReport();
+        });
+    </script>
+}

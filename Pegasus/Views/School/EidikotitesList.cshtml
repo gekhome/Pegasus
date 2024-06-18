@@ -1,0 +1,98 @@
+﻿@model IEnumerable<Pegasus.Models.EidikotitesViewModel>
+@using Pegasus.DAL;
+@using Pegasus.Models;
+
+
+@{
+    ViewBag.Title = "Ειδικότητες (νέες)";
+    Layout = "~/Views/Shared/_SchoolLayout.cshtml";
+}
+
+<style>
+    .k-grid {
+        font-size: 10px;
+    }
+</style>
+
+@Html.AntiForgeryToken()
+    <div class="page-header" style="margin:5px 30px 5px 30px">
+        <span style="margin:5px 30px 5px 30px;font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+            <font style="color:#494949;float:left;font-family:'Segoe UI'">Νέο κωδικολόγιο ειδικοτήτων εκπαιδευτών</font>
+        </span>
+        <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "School", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+        <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+        <span style="margin:5px 5px 5px 10px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Εκτύπωση", "EidikotitesPrint", "School", null, new { @class = "btn btn-primary", style = "font-size:14px", target = "_blank" })</span>
+    </div>
+
+    <div class="body-content" style="margin:10px 30px 5px 30px">
+        @(Html.Kendo().Grid(Model)
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(m => m.EIDIKOTITA_CODE).Width(14);
+            columns.Bound(m => m.EIDIKOTITA_NAME).Groupable(false)
+                .FooterTemplate(@<text>Σύνολο Πλήθος: @item.Count</text>)
+                .GroupFooterTemplate(@<text>Πλήθος: @item.Count</text>)
+                .Width(48);
+            columns.Bound(m => m.EIDIKOTITA_UNIFIED).Width(40);
+            columns.ForeignKey(f => f.KLADOS_UNIFIED, (IEnumerable<SYS_KLADOS_ENIAIOS>)ViewData["kladoiUnified"], "ΚΛΑΔΟΣ_ΚΩΔ", "ΚΛΑΔΟΣ_ΕΝΙΑΙΟΣ").Width(40);
+            columns.ForeignKey(f => f.EIDIKOTITA_KLADOS_ID, (IEnumerable<SYS_KLADOS>)ViewData["kladoi"], "KLADOS_ID", "KLADOS_NAME").Width(14);
+            columns.ForeignKey(f => f.EIDIKOTITA_GROUP_ID, (IEnumerable<SYS_EIDIKOTITES_GROUPS>)ViewData["groups"], "GROUP_ID", "GROUP_TEXT").EditorTemplateName("EidikotitaGroupId").Width(30);
+        })
+        .HtmlAttributes(new { style = "font-size:12px" })
+        .Filterable()
+        .Groupable()
+        .Navigatable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(410))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(true)
+        .PageSize(60)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.EIDIKOTITA_ID);
+            model.Field(p => p.EIDIKOTITA_KLADOS_ID).DefaultValue(1);
+            model.Field(p => p.EIDIKOTITA_GROUP_ID).DefaultValue(0);
+            model.Field(p => p.KLADOS_UNIFIED).DefaultValue(0);
+            model.Field(p => p.EDUCATION_CLASS).DefaultValue(1);
+        })
+        .Read(read => read.Action("Eidikotita_Read", "Tools", null))
+        .Events(events => events.Error("error_handler"))                       
+        .Aggregates(a =>
+            {
+                a.Add(p => p.EIDIKOTITA_NAME).Count();
+            })
+    ) @* datasource*@
+    )
+</div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Σφάλμα:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+        $("#Grid").data("kendoGrid").dataSource.read();
+    }
+
+</script>
+

@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html>
+@*@section banner {
+    @Html.Partial("~/Views/Shared/LayoutBanner")
+}*@
+@using Pegasus.Notification
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kendo.cdn.telerik.com/2014.2.716/js/cultures/kendo.culture.el-GR.min.js"></script>
+	<link href="@Url.Content("~/Content/kendo/2014.2.716/kendo.common.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2014.2.716/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2014.2.716/kendo.silver.min.css")" rel="stylesheet" type="text/css" />
+	<link href="@Url.Content("~/Content/kendo/2014.2.716/kendo.dataviz.silver.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/mvcNotify.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Scripts/messagebox/messagebox.css")" rel="stylesheet" type="text/css" />
+
+	<script src="@Url.Content("~/Scripts/kendo/2014.2.716/jquery.min.js")"></script>
+	<script src="@Url.Content("~/Scripts/kendo/2014.2.716/kendo.all.min.js")"></script>
+	<script src="@Url.Content("~/Scripts/kendo/2014.2.716/kendo.aspnetmvc.min.js")"></script>
+	<script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+    <script src="@Url.Content("~/Scripts/cultures/kendo.culture.el-GR.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/mvcNotify.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/messagebox/messagebox.js")"></script>
+    <script src="@Url.Content("~/Scripts/custom/jspCustom.js")"></script>
+
+    <link rel="icon" href="@Url.Content("~/content/favicon.ico")" />
+
+    <script>
+        kendo.culture("el-GR");
+    </script>
+    <!-- mvcNotify script -->
+    <script type="text/javascript">
+        //Set autoclear of messages. Don't put this into $(document).ready.
+        //mvcNotify.autoClearTimeout = 0; //don't autoclear any types
+        mvcNotify.autoClearTimeout = 10000; //Unit of milliseconds. Requires mvcNotify.typesToAutoClear to be set to something (default behavior).
+        mvcNotify.typesToConsoleLog = "all"; //Log all types to console.
+    </script>
+
+    <!-- Clock scripts -->
+    <script src="@Url.Content("~/Clock/coolclock.js")"></script>
+    <script src="@Url.Content("~/Clock/moreskins.js")"></script>
+    <script src="@Url.Content("~/Clock/excanvas.js")"></script>
+
+</head>
+<body style="background-color:whitesmoke">
+    <div id="mvcNotify" style="display: none;float:right;z-index:1024;position:absolute;top:8%;left:50%;right:3%;padding:10px 5px 5px 20px;">
+        @Html.RenderMessages()
+    </div>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" style="max-height:52px">
+        <div class="body-content">
+            <div class="navbar-header" style="font-family:'Segoe UI';font-size:14px">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Pegasus >", "Index", "Home", null, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse" style="font-family:'Segoe UI';font-size:16px">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Αρχική", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Περιγραφή", "About", "Home")</li>
+                    <li>@Html.ActionLink("Επικοινωνία", "Contact", "Home")</li>
+                </ul>
+                <div class="nav navbar-text navbar-right" style="float:right;color:white;vertical-align:middle;font-size:14px">
+                    Χρήστης: @Html.Raw((string)ViewBag.loggedUser)
+                    <input type="button" class="btn btn-danger" style="font-size:12px" value="Αποσύνδεση" onclick="location.href='@Url.Action("Logout", "Home" )'" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="banner" style="background-color: #1D7CAE;padding-top:4px;max-height:64px">
+        <div class="row">
+            <div class="col-md-1">
+                <img src="~/images/metro/pegasus.png" height="48" width="48" style="margin-top:4px"/>
+            </div>
+            <div class="col-md-4">
+                <p class="header" style="margin-top:2px;background-color:transparent;font-size:38px">P e g a s u s</p>
+            </div>
+            <div class="col-md-offset-6 col-md-1">
+                <canvas style="float:right" id="clockid" class="CoolClock:swissRail:30:0"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="page-header" style="margin:10px 20px 5px 30px">
+        <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #696969">
+            <font style="color:#292929;font-family:'Segoe UI'">Σελίδα εργασιών σχολείων-επιτροπών</font>
+        </span>
+    </div>
+        <div class="row" style="margin:5px 20px 5px 20px">
+        @(Html.Kendo().Menu()
+          .Name("menu")
+          .HtmlAttributes(new { style = "margin-right:20px; width:100%; font-size:15px" })
+          .Items(items =>
+          {
+              items.Add().Text("Αιτήσεις").ImageUrl(Url.Content("~/Images/phone/appbar.cabinet.files.png"))
+                .Items(Children =>
+                {
+                    Children.Add().Text("Μοριοδότηση αιτήσεων").ImageUrl(Url.Content("~/Images/phone/appbar.book.hardcover.open.writing.png")).Action("MainSchool", "SchoolAitiseis");
+                    Children.Add().Text("Ανεβασμένα δικαιολογητικά").ImageUrl(Url.Content("~/Images/phone/appbar.download.png")).Action("AitiseisUploads", "SchoolAitiseis");
+                    Children.Add().Text("Ενστάσεις υποψηφίων").ImageUrl(Url.Content("~/Images/phone/appbar.download.png")).Action("EnstaseisSchool", "Document");
+                    Children.Add().Text("Ενστάσεις και Πρακτικά").ImageUrl(Url.Content("~/Images/phone/appbar.printer.png"))
+                    .Items(children =>
+                    {
+                        children.Add().Text("Ενστάσεις (ανάρτηση)").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("EnstaseisDetailPost", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children.Add().Text("Ενστάσεις (αναλυτικά)").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("EnstaseisDetail", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children.Add().Text("Ενστάσεις (σύνοψη)").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("EnstaseisSummary", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children.Add().Text("Ενστάσεις (μεταφόρτωση)").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("EnstaseisUploadCount", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                    });
+                });
+              items.Add().Text("Πίνακες κατάταξης").ImageUrl(Url.Content("~/Images/phone/appbar.layer.thick.png")).LinkHtmlAttributes(new { title = "Πίνακες χωρίς ονόματα για ανάρτηση" })
+                    .Items(Children =>
+                    {
+                        Children.Add().Text("Πίνακας 1A: ΙΔ.Πιστοποιημένοι στα Μ.Ε.Ε.").ImageUrl(Url.Content("~/Images/phone/appbar.list.check.png"))
+                            .Action("xPinakas1a_Print", "School").LinkHtmlAttributes(new { target = "_blank" });
+                        Children.Add().Text("Πίνακας 1B: ΔΥ.Πιστοποιημένοι στα Μ.Ε.Ε.").ImageUrl(Url.Content("~/Images/phone/appbar.list.check.png"))
+                            .Action("xPinakas1b_Print", "School").LinkHtmlAttributes(new { target = "_blank" });
+                        Children.Add().Text("Πίνακας 2A: ΙΔ.Μη πιστοποιημένοι στα Μ.Ε.Ε.").ImageUrl(Url.Content("~/Images/phone/appbar.list.check.png"))
+                            .Action("xPinakas2a_Print", "School").LinkHtmlAttributes(new { target = "_blank" });
+                        Children.Add().Text("Πίνακας 2B: ΔΥ.Μη πιστοποιημένοι στα Μ.Ε.Ε.").ImageUrl(Url.Content("~/Images/phone/appbar.list.check.png"))
+                            .Action("xPinakas2b_Print", "School").LinkHtmlAttributes(new { target = "_blank" });
+                        Children.Add().Text("Πίνακας 3: Άνεργοι").ImageUrl(Url.Content("~/Images/phone/appbar.list.check.png"))
+                            .Action("xPinakas3a_Print", "School").LinkHtmlAttributes(new { target = "_blank" });
+                        Children.Add().Text("Πίνακας 4: Προστατευόμενοι του Ν.2190").ImageUrl(Url.Content("~/Images/phone/appbar.list.check.png"))
+                            .Action("xPinakas4a_Print", "School").LinkHtmlAttributes(new { target = "_blank" });
+                        Children.Add().Text("Πίνακας 5: Αποκλειόμενοι").ImageUrl(Url.Content("~/Images/phone/appbar.list.check.png"))
+                            .Action("xPinakas5a_Print", "School").LinkHtmlAttributes(new { target = "_blank" });
+                    });
+              items.Add().Text("Πίνακες").ImageUrl(Url.Content("~/Images/phone/appbar.list.reorder.down.png")).LinkHtmlAttributes(new { title = "Πίνακες με ονόματα για εσωτερική χρήση" })
+                .Items(Children =>
+                {
+                    Children.Add().Text("Πίνακας 1: ΙΔ.Πιστοποιημένοι στα Μ.Ε.Ε.").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png"))
+                    .Items(children1 =>
+                    {
+                        children1.Add().Text("Πίνακας 1:  για ανάρτηση στα σχολεία").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas1_School_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children1.Add().Text("Πίνακας 1:  για ανάρτηση στο διαδίκτυο").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas1_Web_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                    });
+                    Children.Add().Text("Πίνακας 11: ΔΥ.Πιστοποιημένοι στα Μ.Ε.Ε.").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png"))
+                    .Items(children1 =>
+                    {
+                        children1.Add().Text("Πίνακας 11:  για ανάρτηση στα σχολεία").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas11_School_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children1.Add().Text("Πίνακας 11:  για ανάρτηση στο διαδίκτυο").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas11_Web_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                    });
+                    Children.Add().Text("Πίνακας 2: ΙΔ.Μη πιστοποιημένοι στα Μ.Ε.Ε.").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png"))
+                    .Items(children2 =>
+                    {
+                        children2.Add().Text("Πίνακας 2:  για ανάρτηση στα σχολεία").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas2_School_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children2.Add().Text("Πίνακας 2:  για ανάρτηση στο διαδίκτυο").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas2_Web_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                    });
+                    Children.Add().Text("Πίνακας 21: ΔΥ.Μη πιστοποιημένοι στα Μ.Ε.Ε.").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png"))
+                    .Items(children2 =>
+                    {
+                        children2.Add().Text("Πίνακας 21:  για ανάρτηση στα σχολεία").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas21_School_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children2.Add().Text("Πίνακας 21:  για ανάρτηση στο διαδίκτυο").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas21_Web_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                    });
+                    Children.Add().Text("Πίνακας 3: Άνεργοι").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png"))
+                    .Items(children3 =>
+                    {
+                        children3.Add().Text("Πίνακας 3:  για ανάρτηση στα σχολεία").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas3_School_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children3.Add().Text("Πίνακας 3:  για ανάρτηση στο διαδίκτυο").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas3_Web_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                    });
+                    Children.Add().Text("Πίνακας 4: Προστατευόμενοι του Ν.2190").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png"))
+                    .Items(children4 =>
+                    {
+                        children4.Add().Text("Πίνακας 4:  για ανάρτηση στα σχολεία").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas4_School_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children4.Add().Text("Πίνακας 4:  για ανάρτηση στο διαδίκτυο").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas4_Web_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                    });
+                    Children.Add().Text("Πίνακας 5: Αποκλειόμενοι").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png"))
+                    .Items(children5 =>
+                    {
+                        children5.Add().Text("Πίνακας 5:  για ανάρτηση στα σχολεία").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas5_School_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        children5.Add().Text("Πίνακας 5:  για ανάρτηση στο διαδίκτυο").ImageUrl(Url.Content("~/Images/phone/appbar.table.select.png")).Action("Pinakas5_Web_Print", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                    });
+                });
+              items.Add().Text("Μητρώα").ImageUrl(Url.Content("~/Images/phone/appbar.people.multiple.magnify.png"))
+                    .Items(Children =>
+                    {
+                        Children.Add().Text("Εκπαιδευτικοί - Προβολή").ImageUrl(Url.Content("~/Images/phone/appbar.control.guide.png")).Action("TeachersRegistry", "School");
+                        Children.Add().Text("Εκπαιδευτικοί - Εκτύπωση").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("TeachersPrint", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                        Children.Add().Text("Αιτήσεις - Προβολή").ImageUrl(Url.Content("~/Images/phone/appbar.control.guide.png")).Action("AitiseisRegistry", "School");
+                        Children.Add().Text("Αιτήσεις - Εκτύπωση").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("AitiseisRegistryPrint", "School")
+                            .LinkHtmlAttributes(new { target = "_blank" });
+                    });
+              items.Add().Text("Στατιστικά").ImageUrl(Url.Content("~/Images/phone/appbar.graph.histogram.description.png"))
+                .Items(Children =>
+                {
+                    Children.Add().Text("Κατανομή Φύλων").ImageUrl(Url.Content("~/Images/phone/appbar.pie.quarter.png")).Action("Stat1_Gender", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Κατανομή Κατηγορίας Πτυχίων").ImageUrl(Url.Content("~/Images/phone/appbar.pie.quarter.png")).Action("Stat8_PtyxiaTypes", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Κατανομή Μεταπτυχιακών Σπουδών").ImageUrl(Url.Content("~/Images/phone/appbar.pie.quarter.png")).Action("Stat2_Postgrad", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Κατανομή Επιμόρφωσης").ImageUrl(Url.Content("~/Images/phone/appbar.pie.quarter.png")).Action("Stat3_Epimorfosi", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Κατανομή Ανεργίας").ImageUrl(Url.Content("~/Images/phone/appbar.graph.histogram.png")).Action("Stat4_Anergia", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Κατανομή Βραχυχρόνια-Μακροχρόνια Ανέργων").ImageUrl(Url.Content("~/Images/phone/appbar.graph.histogram.png")).Action("Stat5_Anergia2", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Κατανομή Ηλικιακών Ομάδων").ImageUrl(Url.Content("~/Images/phone/appbar.graph.histogram.png")).Action("Stat6_AgeGroups", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Κατανομή Κοινωνικών Ομάδων").ImageUrl(Url.Content("~/Images/phone/appbar.graph.histogram.png")).Action("Stat7_SocialGroup", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                });
+              items.Add().Text("Προκηρύξεις").ImageUrl(Url.Content("~/Images/phone/appbar.calendar.year.png"))
+                    .Items(Children =>
+                    {
+                        Children.Add().Text("Στοιχεία προκηρύξεων").ImageUrl(Url.Content("~/Images/phone/appbar.page.corner.folded.text.png")).Action("ProkirixisList", "School");
+                        Children.Add().Text("Ειδικότητες προκηρύξεων").ImageUrl(Url.Content("~/Images/phone/appbar.group.minus.png")).Action("EidikotitesInProkirixi", "School");
+                        Children.Add().Text("Εύρεση σχολών ανά ειδικότητα").ImageUrl(Url.Content("~/Images/phone/appbar.group.minus.png")).Action("EidikotitesSchools", "School");
+                    });
+              items.Add().Text("Ρυθμίσεις").ImageUrl(Url.Content("~/Images/phone/appbar.tools.png"))
+                .Items(Children =>
+                {
+                    Children.Add().Text("Σχολικά έτη").ImageUrl(Url.Content("~/Images/phone/appbar.calendar.range.png")).Action("SchoolYearsList", "School");
+                    Children.Add().Text("Αιτίες αποκλεισμού").ImageUrl(Url.Content("~/Images/phone/appbar.app.minus.png")).Action("ApokleismoiList", "School");
+                    Children.Add().Text("Αφορολόγητα εισοδήματα").ImageUrl(Url.Content("~/Images/phone/appbar.currency.euro.png")).Action("TaxfreeList", "School");
+                    Children.Add().Text("Κλάδοι-Ειδικότητες").ImageUrl(Url.Content("~/Images/phone/appbar.book.png")).Action("EidikotitesList", "School");
+                });
+              items.Add().Text("Πρόσθετα").ImageUrl(Url.Content("~/Images/phone/appbar.layer.add.png"))
+                .Items(Children =>
+                {
+                    Children.Add().Text("Πολλαπλές Αιτήσεις").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("MultipleAitiseis", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Διπλότυπες Αιτήσεις").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("DuplicateAitiseisPrint", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Πληροφορικοί με 'Γνώση Η/Υ'").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("CheckInformaticsTeachers", "School")
+                        .LinkHtmlAttributes(new { title = "Λίστα υποψηφίων ΠΕ86 με επιλογή γνώσης Η/Υ - για ακύρωση", target = "_blank" });
+                    Children.Add().Text("Λίστες υποψηφίων").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("TeachersEidikotitaPrint", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Πίνακες για προσλήψεις").ImageUrl(Url.Content("~/Images/phone/appbar.printer.text.png")).Action("TeachersMoriaPrint", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Παλαιές " + char.ConvertFromUtf32(0x2194) + " Νέες ειδικότητες").ImageUrl(Url.Content("~/Images/phone/appbar.book.png"))
+                        .Action("EidikotitesOldNewPrint", "School")
+                        .LinkHtmlAttributes(new { target = "_blank" });
+                    Children.Add().Text("Περιφέρειες-Δήμοι").ImageUrl(Url.Content("~/Images/phone/appbar.browser.wire.png")).Action("PeriferiesDimoi", "School");
+                });
+
+          })
+    .Orientation(MenuOrientation.Horizontal)
+    )
+    </div>
+    <main>
+        @Html.Partial("_Notifications")
+        @RenderBody()
+        @RenderSection("footer", required: false)
+    </main>
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

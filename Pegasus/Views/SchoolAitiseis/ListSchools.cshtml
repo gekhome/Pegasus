@@ -1,0 +1,123 @@
+﻿@model IEnumerable<Pegasus.Models.AITISI_SCHOOLSViewModel>
+@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Σχολεία προτίμησης";
+    Layout = "~/Views/Shared/_LayoutMin.cshtml";
+}
+
+@Html.AntiForgeryToken()
+<div class="body-content" style="margin:0px 60px 0px 60px">
+
+    <div class="page-header">
+        <div>
+            <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+                <font style="color:#494949;font-family:'Segoe UI'">Σχολικές μονάδες επιλογής</font>
+            </span>
+            <span style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">
+                @*@Html.ActionLink("Επιστροφή", "MainAdmin", "SchoolAitiseis", new { aitisiID = Model.AITISI_ID }, new { @class = "btn btn-warning", style = "font-size:14px" })*@
+                <a class="btn btn-warning" , style="font-size:14px" href="#" onclick="javascript:window.close();opener.window.focus();">Κλείσιμο καρτέλας</a>
+            </span>
+            <button class="btn btn-primary" style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+        </div>
+    </div>
+    <div class="body-content">
+        <fieldset name="SelectedAitisiData">
+            <legend>Στοιχεία επιλεγμένης αίτησης</legend>
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="control-label">Πρωτόκολλο αίτησης:</label>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-control smartShortText" style="max-height:34px; background-color:#EEE" title="@Html.Raw((ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_PROTOCOL)">
+                        @Html.Raw((ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_PROTOCOL)
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="control-label">Ημερομηνία αίτησης:</label>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-control smartShortText" style="max-height:34px; background-color:#EEE" title="@Html.Raw(((DateTime)(ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_DATE).ToShortDateString())">
+                        @Html.Raw(((DateTime)(ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_DATE).ToShortDateString())
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="control-label">Κλάδος-ειδικότητα αίτησης:</label>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-control smartShortText" style="max-height:34px; background-color:#EEE" title="@Html.Raw((ViewBag.SelectedAitisiEidikotita as SYS_EIDIKOTITESViewModel).EIDIKOTITA_DESC)">
+                        @Html.Raw((ViewBag.SelectedAitisiEidikotita as SYS_EIDIKOTITESViewModel).EIDIKOTITA_DESC)
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="control-label">Περιφέρεια αίτησης:</label>
+                </div>
+                <div class="col-md-8">
+                    <label class="form-control smartShortText" style="max-height:34px; background-color:#EEE" title="@Html.Raw((ViewBag.SelectedAitisiPeriferia as SYS_PERIFERIESViewModel).PERIFERIA_NAME)">
+                        @Html.Raw((ViewBag.SelectedAitisiPeriferia as SYS_PERIFERIESViewModel).PERIFERIA_NAME)
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+        <div class="row">
+        @(Html.Kendo().Grid(Model)
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(x => x.SCHOOL_TYPE, (IEnumerable<SYS_SCHOOLTYPES>)ViewData["schooltypes"], "SCHOOL_TYPE_ID", "SCHOOL_TYPE").Width(50);
+            columns.ForeignKey(x => x.SCHOOL, (IEnumerable<SYS_SCHOOLSViewModel>)ViewData["schools"], "SCHOOL_ID", "SCHOOL_NAME").Width(60); //.EditorTemplateName("AitisiSchoolGridEditor");
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(40);
+        })
+            .ToolBar(toolBar =>
+            {
+                toolBar.Create();
+            })
+            .Navigatable()
+            .Filterable()
+            .Editable(editable => editable.Mode(GridEditMode.InLine).CreateAt(GridInsertRowPosition.Top))
+            .Scrollable(scr => scr.Height(200))
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(3))
+            .DataSource(datasource => datasource
+            .Ajax()
+            .Batch(false)
+            .PageSize(20)
+            .ServerOperation(false)
+            .Events(events => events.Error("error_handler"))
+            .Model(model =>
+            {
+                model.Id(p => p.ID);
+                model.Field(p => p.SCHOOL_TYPE).DefaultValue((int)ViewData["defaultSchoolType"]);
+                model.Field(p => p.SCHOOL).DefaultValue((int)ViewData["defaultSchool"]);
+            })
+            .Create(create => create.Action("Schools_Create", "SchoolAitiseis", new { aitisiID = (ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_ID }))
+            .Update(update => update.Action("Schools_Update", "SchoolAitiseis", new { aitisiID = (ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_ID }))
+            .Read(read => read.Action("Schools_Read", "SchoolAitiseis", new { aitisiID = (ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_ID }))
+            .Destroy("Schools_Destroy", "SchoolAitiseis")
+            )
+        )
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+</script>
+
+
+
+

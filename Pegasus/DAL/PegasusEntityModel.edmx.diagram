@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="258cee8857c44bc09e3117b19a023ed6" Name="Diagram1" ZoomLevel="86">
+        <EntityTypeShape EntityType="PegasusDBModel.AITISIS_SCHOOLS" Width="1.625" PointX="5.125" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.AITISIS_STATUS" Width="1.5" PointX="0.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.ROLES" Width="1.5" PointX="6.125" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_ANERGIA" Width="1.5" PointX="2.25" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_APOKLEISMOI" Width="1.875" PointX="0.5" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_ARMY" Width="1.5" PointX="11.75" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_BASICEDUCATION" Width="1.875" PointX="13.375" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_COMPUTERASEP" Width="1.875" PointX="13.375" PointY="0.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_DIMOS" Width="1.5" PointX="10" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_EIDIKOTITES" Width="1.875" PointX="9.25" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_GENDERS" Width="1.5" PointX="11.625" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_KLADOS" Width="1.5" PointX="9.5" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_LANGUAGE" Width="1.625" PointX="12.625" PointY="12.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_MSCPERIODS" Width="1.875" PointX="0.5" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_NOMISMA" Width="1.5" PointX="15.5" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_PEDAGOGICPERIOD" Width="2" PointX="7.125" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_PERIFERIAKES" Width="1.75" PointX="6" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_PERIFERIES" Width="1.5" PointX="8" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_SCHOOLS" Width="1.5" PointX="10" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_SCHOOLTYPES" Width="1.875" PointX="13.375" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_SCHOOLYEARS" Width="2" PointX="11.5" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_SOCIALGROUPS" Width="1.875" PointX="0.5" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_SPOUDES_TYPES" Width="1.875" PointX="7" PointY="9.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_TEACH1_TYPES" Width="1.875" PointX="13.375" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_TEACH2_TYPES" Width="1.75" PointX="7.125" PointY="18.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_TEACHER_TYPES" Width="2" PointX="9.125" PointY="18.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_YESNO" Width="1.5" PointX="7.25" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.TEACHERS" Width="1.5" PointX="0.625" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.USER_ADMINS" Width="1.5" PointX="15.5" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.USER_TEACHERS" Width="1.75" PointX="4" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="PegasusDBModel.VD_EIDIKOTITES" Width="1.5" PointX="14.125" PointY="7.875" IsExpanded="true" />
+        <AssociationConnector Association="PegasusDBModel.FK_SYS_DIMOS_SYS_PERIFERIES" ManuallyRouted="false" />
+        <AssociationConnector Association="PegasusDBModel.FK_SYS_EIDIKOTITES_SYS_KLADOS" ManuallyRouted="false" />
+        <AssociationConnector Association="PegasusDBModel.FK_SYS_SPOUDES_TYPES_SYS_KLADOS" ManuallyRouted="false" />
+        <AssociationConnector Association="PegasusDBModel.FK_SYS_SCHOOLS_SYS_PERIFERIAKES" ManuallyRouted="false" />
+        <AssociationConnector Association="PegasusDBModel.FK_SYS_SCHOOLS_SYS_PERIFERIES" ManuallyRouted="false" />
+        <AssociationConnector Association="PegasusDBModel.USER_TEACHERS_ROLES" ManuallyRouted="false" />
+        <AssociationConnector Association="PegasusDBModel.FK_TEACHERS_SYS_PERIFERIES" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlTEACHER_AITISEIS" Width="2.125" PointX="17.625" PointY="7.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_EPAGELMA" Width="1.5" PointX="15.625" PointY="6.125" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_TAXFREE" Width="1.5" PointX="15.875" PointY="7.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.PROKIRIXIS_SCHOOLS" Width="2.5" PointX="17.375" PointY="2.375" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlPERIFERIES_SCHOOLS" Width="2.375" PointX="9.75" PointY="12.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlUSER_SCHOOL" Width="2.25" PointX="7.125" PointY="12.125" />
+        <EntityTypeShape EntityType="PegasusDBModel.PROKIRIXIS_EIDIKOTITES" Width="2.5" PointX="17.5" PointY="4.5" />
+        <AssociationConnector Association="PegasusDBModel.FK_PROKIRIXIS_EIDIKOTITES_SYS_EIDIKOTITES" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_FREELANCE_1" Width="2.125" PointX="11.25" PointY="14.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_FREELANCE_FINAL" Width="2.125" PointX="15" PointY="18.625" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_TEACHING_2" Width="1.875" PointX="11.5" PointY="16.375" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_VOCATION_1" Width="2.125" PointX="12.375" PointY="18.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_VOCATION_FINAL" Width="2.125" PointX="13.625" PointY="16.375" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_EIDIKOTITES_GROUPS" Width="2.375" PointX="17.25" PointY="12.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.PROKIRIXIS" Width="2.25" PointX="20.5" PointY="0.5" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_PROKIRIXI_STATUS" Width="2.25" PointX="15.5" PointY="0.625" />
+        <AssociationConnector Association="PegasusDBModel.FK_PROKIRIXIS_EIDIKOTITES_PROKIRIXIS" />
+        <AssociationConnector Association="PegasusDBModel.FK_PROKIRIXIS_SCHOOLS_PROKIRIXIS1" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlTEACHERS_IN_AITISEIS" Width="2.125" PointX="16.125" PointY="14.375" />
+        <EntityTypeShape EntityType="PegasusDBModel.USER_SCHOOLS" Width="1.5" PointX="11.625" PointY="0.75" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_EDUCLASSES" Width="1.75" PointX="7.125" PointY="5.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_ANERGIA_OLD" Width="1.875" PointX="17.875" PointY="0.625" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_FREELANCE_1_OLD" Width="2.125" PointX="10.125" PointY="22.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_FREELANCE_FINAL_OLD" Width="2.375" PointX="12.625" PointY="22.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_TEACHING_2_OLD" Width="2" PointX="10.125" PointY="20.5" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_TEACHING_FINAL_OLD" Width="2.5" PointX="15.25" PointY="20.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_VOCATION_1_OLD" Width="2.375" PointX="12.625" PointY="20.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_VOCATION_FINAL_OLD" Width="2.5" PointX="15.25" PointY="22.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_WORK_FINAL" Width="2" PointX="17.375" PointY="18.625" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEXP_TEACHING_FINAL" Width="2.25" PointX="13.625" PointY="14.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlTEACHERS_WITH_AITISEIS_UNIQUE" Width="2.75" PointX="7.125" PointY="20.5" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlTEACHERS_WITH_AITISEIS" Width="2.625" PointX="7.125" PointY="22.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_EIDIKOTITES_OLD" Width="2" PointX="17.875" PointY="20.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_KLADOS_ENIAIOS" Width="1.875" PointX="7" PointY="7.5" />
+        <AssociationConnector Association="PegasusDBModel.FK_SYS_EIDIKOTITES_SYS_KLADOS_ENIAIOS" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_LANGUAGELEVEL" Width="1.875" PointX="0.5" PointY="14.375" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlTEACHER_ACCOUNTS_INFO" Width="2.375" PointX="14.5" PointY="11" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEIDIKOTITES_SELECTOR" Width="2.125" PointX="11.5" PointY="10" />
+        <EntityTypeShape EntityType="PegasusDBModel.APP_STATUS" Width="1.75" PointX="0.5" PointY="21.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.REEDUCATION" Width="1.875" PointX="0.5" PointY="16.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEIDIKOTITES_KU" Width="1.875" PointX="0.5" PointY="19.125" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlAITISEIS_WITH_EXPERIENCE" Width="2.75" PointX="23.25" PointY="0.5" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlAITISEIS_WITHOUT_EXPERIENCE" Width="2.75" PointX="23.25" PointY="4.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlEIDIKOTITES_IN_SCHOOLS" Width="2.75" PointX="23.25" PointY="8.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.sqlUSER_TEACHER_SELECT" Width="2.125" PointX="4.75" PointY="24.125" />
+        <EntityTypeShape EntityType="PegasusDBModel.TAXISNET" Width="1.875" PointX="5" PointY="22.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.UploadEnstaseis" Width="1.875" PointX="23.25" PointY="10.875" />
+        <EntityTypeShape EntityType="PegasusDBModel.UploadEnstaseisFiles" Width="1.75" PointX="25.75" PointY="10.875" />
+        <AssociationConnector Association="PegasusDBModel.FK_UPLOADS_FILES_UPLOADS" />
+        <EntityTypeShape EntityType="PegasusDBModel.UploadGeneralFiles" Width="1.75" PointX="25.75" PointY="14" />
+        <EntityTypeShape EntityType="PegasusDBModel.UploadVocationFiles" Width="1.875" PointX="25.75" PointY="19.75" />
+        <EntityTypeShape EntityType="PegasusDBModel.UploadGeneral" Width="1.75" PointX="23.375" PointY="14.125" />
+        <EntityTypeShape EntityType="PegasusDBModel.UploadVocation" Width="1.75" PointX="23.375" PointY="19.875" />
+        <AssociationConnector Association="PegasusDBModel.FK_UploadGeneralFiles_UploadGeneral" />
+        <AssociationConnector Association="PegasusDBModel.FK_UploadVocationFiles_UploadVocation" />
+        <EntityTypeShape EntityType="PegasusDBModel.UploadTeaching" Width="1.75" PointX="23.375" PointY="17" />
+        <EntityTypeShape EntityType="PegasusDBModel.UploadTeachingFiles" Width="1.875" PointX="25.75" PointY="17.125" />
+        <AssociationConnector Association="PegasusDBModel.FK_UploadTeachingFiles_UploadTeaching" />
+        <EntityTypeShape EntityType="PegasusDBModel.xUploadedGeneralFiles" Width="2" PointX="23.125" PointY="23.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.xUploadedTeachingFiles" Width="2.125" PointX="25.625" PointY="23.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.xUploadedVocationFiles" Width="2" PointX="20.75" PointY="23.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.AITISIS" Width="2" PointX="2.625" PointY="4.75" />
+        <EntityTypeShape EntityType="PegasusDBModel.AITISIS_ORIGINAL" Width="2" PointX="20.625" PointY="6" />
+        <AssociationConnector Association="PegasusDBModel.FK_AITISIS_PROKIRIXIS" />
+        <AssociationConnector Association="PegasusDBModel.FK_AITISIS_PROKIRIXIS1" />
+        <AssociationConnector Association="PegasusDBModel.FK_AITISIS_SCHOOLS_AITISIS" />
+        <AssociationConnector Association="PegasusDBModel.FK_AITISIS_TEACHERS" />
+        <AssociationConnector Association="PegasusDBModel.FK_AITISIS_ORIGINAL_TEACHERS" />
+        <EntityTypeShape EntityType="PegasusDBModel.SYS_PTYXIA_TYPES" Width="1.75" PointX="0.5" PointY="23.25" />
+        <EntityTypeShape EntityType="PegasusDBModel.SUPPORT" Width="1.625" PointX="0.625" PointY="25" />
+        <EntityTypeShape EntityType="PegasusDBModel.EXP_FREELANCE" Width="1.75" PointX="5.125" PointY="17" />
+        <EntityTypeShape EntityType="PegasusDBModel.EXP_TEACHING" Width="1.75" PointX="5.125" PointY="8.125" />
+        <EntityTypeShape EntityType="PegasusDBModel.EXP_VOCATIONAL" Width="1.75" PointX="5.125" PointY="12.875" />
+        <AssociationConnector Association="PegasusDBModel.FK_EXP_FREELANCE_AITISIS" />
+        <AssociationConnector Association="PegasusDBModel.FK_EXP_TEACHING1_AITISIS" />
+        <AssociationConnector Association="PegasusDBModel.FK_EXP_VOCATIONAL_AITISIS" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

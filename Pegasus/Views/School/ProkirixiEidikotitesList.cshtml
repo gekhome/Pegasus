@@ -1,0 +1,65 @@
+﻿@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Προκηρυσσόμενες ειδικότητες";
+    Layout = "~/Views/Shared/_SchoolLayout.cshtml";
+}
+
+<div class="page-header" style="margin:5px 60px 5px 60px">
+    <span style="margin:5px 60px 5px 60px;font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+        <font style="color:#494949;float:left;font-family:'Segoe UI'">Ευρετήριο ειδικοτήτων προκηρύξεων</font>
+    </span>
+    <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "School", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+    <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+</div>
+
+<div class="body-content" style="margin:10px 60px 5px 60px">
+        @(Html.Kendo().Grid<ProkirixisEidikotitesViewModel>()
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(f => f.PROKIRIXI_ID, (IEnumerable<PROKIRIXIS>)ViewData["Prokirixis"], "ID", "PROTOCOL").Width(40);
+            columns.ForeignKey(f => f.SCHOOL_ID, (IEnumerable<SYS_SCHOOLS>)ViewData["Schools"], "SCHOOL_ID", "SCHOOL_NAME").Width(40);
+            columns.ForeignKey(f => f.EIDIKOTITA_ID, (IEnumerable<VD_EIDIKOTITES>)ViewData["Eidikotites"], "EIDIKOTITA_ID", "EIDIKOTITA_DESC").Width(60)
+                .ClientFooterTemplate("Ολικό πλήθος: #=count#")
+                .ClientGroupFooterTemplate("Πλήθος: #=count#");
+        })
+        .Filterable()
+        .Groupable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(400))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(true)
+        .PageSize(30)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.PSE_ID);
+            model.Field(p => p.PROKIRIXI_ID);
+            model.Field(p => p.SCHOOL_ID);
+            model.Field(p => p.EIDIKOTITA_ID);
+        })
+        .Read(read => read.Action("ProkirixiEidikotita_Read", "School"))
+        .Aggregates(a =>
+            {
+                a.Add(p => p.EIDIKOTITA_ID).Count();
+            })
+        ) @* datasource*@
+    )
+</div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+</script>
+

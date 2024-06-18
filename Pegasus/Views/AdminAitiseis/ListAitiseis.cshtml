@@ -1,0 +1,106 @@
+﻿@using Pegasus.DAL;
+@using Pegasus.Models;
+@{
+    ViewBag.Title = "Διαχείριση αιτήσεων";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string schoolYear = ViewData["schoolYearText"].ToString();
+    string protocol = ViewData["prokirixiProtocol"].ToString();
+    string displayInfo = schoolYear + ": " + protocol;       
+}
+
+<style>
+    .k-grid {
+        font-size: 12px;
+    }
+</style>
+
+@Html.AntiForgeryToken()
+<div class="page-header" style="margin:5px 30px 5px 30px">
+    <span style="margin:5px 30px 5px 30px;font-family:'Segoe UI';font-size:14px">
+        <font style="color:#494949;float:left;font-family:'Segoe UI';font-style:normal">
+            @Html.Label("", "Αιτήσεις προκήρυξης > " + displayInfo, new { @style = "font-family:'Segoe UI';font-style:normal" })
+        </font>
+    </span>
+    <span style="margin:0px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "Admin", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+    <button class="btn btn-primary" style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+</div>
+
+<div class="body-content" style="margin:0px 20px 5px 20px">
+    @(Html.Kendo().Grid<AitisisViewModel>()
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.AFM).Width(18).Groupable(false);
+            columns.Bound(x => x.AITISI_PROTOCOL).Width(30).Groupable(false)
+                .ClientFooterTemplate("Ολικό πλήθος: #=count#")
+                .ClientGroupFooterTemplate("Πλήθος: #=count#");
+            columns.Bound(x => x.LASTNAME).Width(50).Title("Ονοματεπώνυμο").Groupable(false);
+            columns.ForeignKey(x => x.EIDIKOTITA, (IEnumerable<Pegasus.DAL.VD_EIDIKOTITES>)ViewData["eidikotites"], "EIDIKOTITA_ID", "EIDIKOTITA_DESC").Width(50);
+            columns.ForeignKey(x => x.SCHOOL_ID, (IEnumerable<Pegasus.DAL.SYS_SCHOOLS>)ViewData["schools"], "SCHOOL_ID", "SCHOOL_NAME").Width(35);               
+            columns.Template(@<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("EditAitisi", "AdminAitiseis") + "?aitisiId=#=AITISI_ID#' target = _blank><span class=\"k-icon k-edit\"></span>Καρτέλα</a>"
+            ).Width(24);
+            columns.Template(@<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("ListSchools", "AdminAitiseis") + "?aitisiId=#=AITISI_ID#' target = _blank><span class=\"k-icon k-edit\"></span>Σχολεία</a>"
+            ).Width(24);
+            columns.Command(command => { command.Destroy(); }).Width(26);
+            })
+            .ToolBar(toolBar =>
+            {
+                toolBar.Create();
+                toolBar.Save();
+            })
+            .Navigatable()
+            .Editable(editable => editable.Mode(GridEditMode.InCell).CreateAt(GridInsertRowPosition.Top))
+            .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+            .Filterable()
+            .Groupable()
+            .Scrollable(scr => scr.Height(400))
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(10))
+            .DataSource(datasource => datasource
+            .Ajax()
+            .Batch(true)
+            .PageSize(60)
+            .ServerOperation(true)
+            .Events(events => { events.Error("error_handler"); })
+            .Model(model =>
+            {
+                model.Id(p => p.AITISI_ID);
+                model.Field(p => p.AFM);
+                model.Field(p => p.AITISI_PROTOCOL);
+                model.Field(p => p.SCHOOL_ID).DefaultValue(ViewData["defaultSchool"]);
+                model.Field(p => p.LASTNAME).Editable(false);
+                model.Field(p => p.EIDIKOTITA).Editable(false);
+                model.Field(p => p.PERIFERIA_ID).Editable(false);
+            })
+            .Create("Create", "AdminAitiseis")
+            .Read("Read", "AdminAitiseis")
+            .Update("Update", "AdminAitiseis")
+            .Destroy("Destroy", "AdminAitiseis")
+            .Aggregates(a =>
+            {
+                a.Add(p => p.AITISI_PROTOCOL).Count();
+            })
+        )
+)
+</div>
+
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+</script>
+
+
+
+
+

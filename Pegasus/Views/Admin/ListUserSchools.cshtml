@@ -1,0 +1,101 @@
+﻿@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Λογαριασμοί Σχολείων";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+<div class="page-header" style="margin:5px 30px 5px 30px">
+    <span style="margin:5px 30px 5px 30px;font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+        <font style="color:#494949;float:left;font-family:'Segoe UI'">Λογαριασμοί σχολείων</font>
+    </span>
+    <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "Admin", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+    <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+    <span style="margin:5px 5px 5px 10px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Εκτύπωση", "SchoolAccountsPrint", "Admin", null, new { @class = "btn btn-primary", style = "font-size:14px", target = "_blank" })</span>
+    <span style="margin:5px 5px 5px 10px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Αλλαγή κωδικών", "CreatePasswords", "Admin", null, new { @class = "btn btn-danger", style = "font-size:14px" })</span>
+</div>
+<div class="body-content" style="margin:10px 30px 5px 30px">
+    @(Html.Kendo().Grid<UserSchoolViewModel>()
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.USERNAME).Width(40);
+            columns.Bound(c => c.PASSWORD).Width(36);
+            columns.ForeignKey(c => c.USER_SCHOOLID, (IEnumerable<SYS_SCHOOLS>)ViewData["schools"], "SCHOOL_ID", "SCHOOL_NAME").Title("Σχολική Μονάδα").Width(50);
+            columns.Bound(c => c.ISACTIVE).Width(20).ClientTemplate("<input type='checkbox' #= ISACTIVE ? checked='checked' : '' # class='chkbx' ></input>").Width(20);
+            columns.Command(command => command.Destroy().Text("Διαγραφή")).Width(32).Title("Εντολές");
+        })
+        .ToolBar(toolBar =>
+        {
+            toolBar.Create();
+            toolBar.Save();
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InCell))
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Filterable()
+        .Scrollable(scr => scr.Height(420))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+            .Ajax()
+            .Batch(true)
+            .PageSize(60)
+            .ServerOperation(false)
+            .Events(events => events.Error("error_handler"))
+            .Model(model => {
+                model.Id(p => p.USER_ID);
+                model.Field(p => p.USER_SCHOOLID).DefaultValue(1);
+            })
+            .Create(create => create.Action("UserSchool_Create", "Admin"))
+            .Read(read => read.Action("UserSchool_Read", "Admin"))
+            .Update(update => update.Action("UserSchool_Update", "Admin"))
+            .Destroy(destroy => destroy.Action("UserSchool_Destroy", "Admin"))
+            .Aggregates(a =>
+            {
+                a.Add(p => p.USERNAME).Count();
+            })
+        )
+    )
+</div>
+
+<script id="checkbox-events" type="text/javascript">
+
+    // Date: 16-11-2018
+    // THIS IS IT! It works for any number of checkbox columns
+    // in batch editing mode of the grid.
+    // Solution link: https://stackoverflow.com/questions/17889049/adding-bindeable-checkbox-column-to-grid
+    $(function () {
+        $('#Grid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#Grid').data().kendoGrid;
+
+            grid.closeCell();
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            var col = $(this).closest('td');
+
+            grid.editCell(col);
+            dataItem.set(grid.columns[col.index()].field, checked);
+            grid.closeCell(col);
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+</script>
+
+
+
+
+
+

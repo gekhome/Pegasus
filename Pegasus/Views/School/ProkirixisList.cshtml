@@ -1,0 +1,71 @@
+﻿@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Προκηρύξεις";
+    Layout = "~/Views/Shared/_SchoolLayout.cshtml";
+}
+
+<style>
+    .k-grid {
+        font-size: 11px;
+    }
+</style>
+
+<div class="page-header" style="margin:5px 30px 5px 30px">
+    <span style="margin:5px 30px 5px 30px;font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+        <font style="color:#494949;float:left;font-family:'Segoe UI'">Προκηρύξεις</font>
+    </span>
+    <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "School", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+    <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+</div>
+
+<div class="body-content" style="margin:10px 30px 5px 30px">
+        @(Html.Kendo().Grid<ProkirixisViewModel>()
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(f => f.SCHOOL_YEAR, (IEnumerable<SYS_SCHOOLYEARS>)ViewData["school_years"], "SY_ID", "SY_TEXT").Width(28);
+            columns.Bound(m => m.PROTOCOL).Width(30);
+            columns.Bound(m => m.FEK).Width(26);
+            columns.Bound(m => m.DATE_START).Width(24);
+            columns.Bound(m => m.DATE_END).Width(24);
+            columns.Bound(m => m.HOUR_START).Width(20);
+            columns.Bound(m => m.HOUR_END).Width(20);
+            columns.ForeignKey(f => f.STATUS, (IEnumerable<SYS_PROKIRIXI_STATUS>)ViewData["Status"], "STATUS_ID", "STATUS").Width(26);
+            columns.Bound(m => m.ACTIVE).Width(20).ClientTemplate("<input type='checkbox' #= ACTIVE ? checked='checked' : '' # ></input>");
+        })
+        .HtmlAttributes(new { style = "font-size:14px" })
+        .Filterable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(420))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(true)
+        .PageSize(40)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.ID);
+            model.Field(p => p.SCHOOL_YEAR);
+            model.Field(p => p.STATUS);
+        })
+        .Read(read => read.Action("Prokirixis_Read", "School"))
+    ) @* datasource*@
+    )
+</div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+</script>
+
+

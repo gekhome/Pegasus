@@ -1,0 +1,522 @@
+﻿@using Pegasus.DAL;
+@using Pegasus.Models;
+@{
+    ViewBag.Title = "Μοριοδότηση αιτήσεων";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int aitisi_id = (int)ViewData["aitisi_id"];     // this is properly set by controller "Main" and stores selected Aitisi ID
+    int aitisiID = aitisi_id;
+    string schoolYear = ViewData["schoolYearText"].ToString();
+    string protocol = ViewData["prokirixiProtocol"].ToString();
+    string displayInfo = schoolYear + ": " + protocol;       
+}
+
+<script src="@Url.Content("~/Scripts/date-el-GR.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    //Set autoclear of messages. Don't put this into $(document).ready.
+    mvcNotify.autoClearTimeout = 0; //don't autoclear any types
+    mvcNotify.typesToConsoleLog = "all"; //Log all types to console.
+</script>
+
+<head>
+    <title></title>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+</head>
+
+@Html.AntiForgeryToken()
+<div class="page-header" style="margin:10px 20px 5px 20px">
+    <div>
+        <span style="margin:5px 60px 5px 20px;font-family:'Segoe UI';font-size:14px">
+            <font style="color:#494949;float:left;font-family:'Segoe UI';font-style:normal">
+                @Html.Label("", "Αιτήσεις προκήρυξης - " + displayInfo, new { @style = "font-family:'Segoe UI';font-style:normal" })
+            </font>
+        </span>
+        <span style="margin:0px 4px 5px 4px;float:right;font-family:'Segoe UI';font-size:14px">
+            @Html.ActionLink("Επιστροφή", "Index", "Admin", null, new { @class = "btn btn-warning", style = "font-size:14px" })
+        </span>
+        <div class="tooltip2" style="margin:0px 4px 5px 4px;float:right;font-family:'Segoe UI';font-size:14px">
+            <button class="btn btn-danger" style="margin:0px 4px 5px 4px;float:right;font-family:'Segoe UI';font-size:14px" onclick="Moriodotisi()">Μοριοδότηση</button>
+            <span class="tooltip2text">Μοριοδότηση όλων των αιτήσεων της τρέχουσας προκήρυξης</span>
+        </div>
+        <div class="tooltip2" style="margin:0px 4px 5px 4px;float:right;font-family:'Segoe UI';font-size:14px">
+            <button class="btn btn-info" style="margin:0px 4px 5px 4px;float:right;font-family:'Segoe UI';font-size:14px" onclick="BatchTransfer()">Μεταφορά</button>
+            <span class="tooltip2text">Μεταφορά όλων των προηγούμενων προϋπηρεσιών στις τρέχουσες αιτήσεις</span>
+        </div>
+        <div id="divLoading2" style="margin:0px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px; z-index: 30001;display:none">
+            <p id="message-icon" style="margin-right:5px; font-size:13px;color:#00008b">
+                Μεταφορά προϋπηρεσιών σε εξέλιξη...<img id="ajax-icon" src="~/Images/other/progress4.gif" style="margin-left:5px;width:36px;height:36px">
+            </p>
+        </div>
+        <div id="divLoading" style="margin:0px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px; z-index: 30001;display:none">
+            <p id="message-icon" style="margin-right:5px; font-size:13px;color:#00008b">
+                Μοριοδότηση σε εξέλιξη. Περιμένετε...<img id="ajax-icon" src="~/Images/other/progress.gif" style="margin-left:5px;width:36px;height:36px">
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="body-content" style="margin:10px 20px 10px 20px">
+    @(Html.Kendo().Grid<sqlTeacherAitiseisModel>()
+        .Name("Master")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.AFM).Width(18).Groupable(true);
+            columns.Bound(c => c.FULLNAME).Width(52)
+                .ClientFooterTemplate("Ολικό πλήθος: #=count#")
+                .ClientGroupFooterTemplate("Πλήθος: #=count#");
+            columns.Bound(c => c.EIDIKOTITA_TEXT).Width(76);
+            columns.Bound(c => c.SCHOOL_NAME).Width(38);
+            columns.Bound(c => c.CHECK_STATUS).ClientTemplate("<input type='checkbox' #= CHECK_STATUS ? checked='checked' : '' # ></input>").Width(10).Filterable(false);
+            columns.Template(@<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("EditAitisi", "AdminAitiseis") + "?aitisiId=#=AITISI_ID#' target = _blank><span class=\"k-icon k-edit\"></span>Αίτηση</a>"
+            ).Width(23);
+            columns.Template(@<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("AitisiUploadedFiles", "AdminAitiseis") + "?aitisiId=#=AITISI_ID#' target = _blank><span class=\"k-icon k-cloud\"></span>Αρχεία</a>"
+            ).Width(23);
+            columns.Template(@<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("MoriaResultsView", "AdminAitiseis") + "?aitisiId=#=AITISI_ID#' target = _blank><span class=\"k-icon k-edit\"></span>Μόρια</a>"
+            ).Width(20);
+        })
+        .HtmlAttributes(new { style="font-size:12px" })
+        .Filterable()
+        .Groupable()
+        .Selectable()
+        .Scrollable(scr => scr.Height(340))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(10))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .PageSize(60)
+        .ServerOperation(true)
+        .Model(model =>
+        {
+            model.Id(p => p.AITISI_ID);
+        })
+        .Aggregates(a =>
+        {
+            a.Add(p => p.FULLNAME).Count();
+        })
+        .Read(read => read.Action("Aitiseis_Read", "AdminAitiseis", new { aitisiId = aitisiID }))
+    )
+    .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+    .Events(events => events.Change("change"))
+    )
+</div>
+
+<div id="ExperiencePanel" class="row" style="margin:10px 20px 5px 20px">
+    @(Html.Kendo().TabStrip()
+    .Name("WorkTabStrip")
+    .Items(items =>
+    {
+        items.Add()
+        .Text("Διδακτικές")
+        .Selected(true)
+        .Content(
+        @<text>
+        <div class="row" style="margin-right:2px; margin-left:2px">
+            @(Html.Kendo().Grid<Pegasus.Models.ViewModelTeaching>()
+            .Name("Child1")
+            .Columns(columns =>
+            {
+                columns.ForeignKey(f => f.TEACH_TYPE, (IEnumerable<SYS_TEACH1_TYPES>)ViewData["teach_types"], "TYPE_ID", "TYPE_TEXT").Width(38);
+                columns.ForeignKey(f => f.SCHOOL_YEAR, (IEnumerable<SYS_SCHOOLYEARS>)ViewData["school_years"], "SY_ID", "SY_TEXT").Width(20).Title("Σχ.έτος");
+                columns.Bound(m => m.DATE_FROM).Width(20).Filterable(false);
+                columns.Bound(m => m.DATE_TO).Width(20).Filterable(false);
+                columns.Bound(m => m.HOURS).Width(15).Filterable(false);
+                columns.Bound(m => m.HOURS_WEEK).Width(15).Filterable(false);
+                columns.Bound(m => m.MORIA).Width(12).Format("{0:0.00}").Filterable(false);
+                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(40);            
+            })
+            .ToolBar(toolBar =>
+            {
+                toolBar.Create();
+            })
+            .Navigatable()
+            .Filterable()
+            .Groupable()
+            .Selectable()
+            .Editable(edit => edit.Mode(GridEditMode.PopUp).Window(w => w.Width(800).Height(600).Title("Επεξεργασία διδακτικής εμπειρίας")).TemplateName("FormTeaching"))
+            .Events(e => e.Edit("onEdited1"))
+            .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+            .Scrollable(scr => scr.Height(360))
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(10))
+            .DataSource(datasource => datasource
+            .Ajax()
+            .PageSize(40)
+            .ServerOperation(false)
+            .Model(model =>
+            {
+                model.Id(p => p.EXP_ID);
+                model.Field(p => p.AITISI_ID).Editable(false);
+                model.Field(p => p.TEACH_TYPE).DefaultValue(1);
+                model.Field(p => p.SCHOOL_YEAR).DefaultValue((int)ViewData["defaultSchoolYear"]);
+                model.Field(p => p.MORIA).Editable(false);
+            })
+            .Create(create => create.Action("Teaching_Create", "AdminAitiseis").Data("data"))
+            .Read(read => read.Action("Teaching_Read", "AdminAitiseis").Data("data"))
+            .Update(update => update.Action("Teaching_Update", "AdminAitiseis").Data("data"))
+            .Destroy("Teaching_Destroy", "AdminAitiseis")
+            .Events(events => events.Error("error_handler1"))
+            )
+            )
+        </div>
+        <p></p>
+        </text>);
+
+        items.Add()
+        .Text("Επαγγελματικές")
+        .Content(
+        @<text>
+        <div class="row" style="margin-right:2px; margin-left:2px">
+            @(Html.Kendo().Grid<Pegasus.Models.ViewModelVocational>()
+            .Name("Child2")
+            .Columns(columns =>
+            {
+                columns.Bound(m => m.DATE_FROM).Width(22);
+                columns.Bound(m => m.DATE_TO).Width(22);
+                columns.Bound(m => m.DAYS_AUTO).Width(20);
+                columns.Bound(m => m.DAYS_MANUAL).Width(20);
+                columns.Bound(m => m.MORIA).Width(14).Format("{0:0.00}");
+                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(40);
+            })
+            .ToolBar(toolBar =>
+            {
+                toolBar.Create();
+            })
+            .Navigatable()
+            .Filterable()
+            .Groupable()
+            .Editable(edit => edit.Mode(GridEditMode.PopUp).Window(w => w.Width(800).Height(560).Title("Επεξεργασία επαγγελματικής εμπειρίας")).TemplateName("FormVocational"))
+            .Events(e => e.Edit("onEdited2"))
+            .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+            .Scrollable(scr => scr.Height(300))
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(10))
+            .DataSource(datasource => datasource
+            .Ajax()
+            .PageSize(40)
+            .ServerOperation(false)
+            .Model(model =>
+            {
+                model.Id(p => p.EXP_ID);
+                model.Field(p => p.MORIA).Editable(false);
+                model.Field(p => p.DAYS_AUTO).Editable(false);
+                model.Field(p => p.AITISI_ID).Editable(false);                        
+            })
+            .Create(create => create.Action("Vocation_Create", "AdminAitiseis").Data("data"))
+            .Read(read => read.Action("Vocation_Read", "AdminAitiseis").Data("data"))
+            .Update(update => update.Action("Vocation_Update", "AdminAitiseis").Data("data"))
+            .Destroy("Vocation_Destroy", "AdminAitiseis")
+            .Events(events => events.Error("error_handler2"))
+            )
+            )
+        </div>
+        <p></p>
+        </text>);
+        items.Add()
+        .Text("Ελεύθερο επάγγελμα")
+        .Content(
+        @<text>
+        <div class="row" style="margin-right:2px; margin-left:2px">
+            @(Html.Kendo().Grid<Pegasus.Models.ViewModelFreelance>()
+            .Name("Child3")
+            .Columns(columns =>
+            {
+                columns.ForeignKey(f => f.INCOME_YEAR, (IEnumerable<SYS_TAXFREE>)ViewData["income_years"], "YEAR_ID", "YEAR_TEXT").Width(22)
+                .HtmlAttributes(new { id = "years" });
+                columns.Bound(m => m.INCOME).Width(18);
+                columns.Bound(m => m.DATE_FROM).Width(22);
+                columns.Bound(m => m.DATE_TO).Width(22);
+                columns.Bound(m => m.DAYS_AUTO).Width(20);
+                columns.Bound(m => m.DAYS_MANUAL).Width(20);
+                columns.Bound(m => m.MORIA).Width(14).Format("{0:0.00}");
+                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(40);
+            })
+            .ToolBar(toolBar =>
+            {
+                toolBar.Create();
+            })
+            .Navigatable()
+            .Filterable()
+            .Editable(edit => edit.Mode(GridEditMode.PopUp).Window(w => w.Width(800).Height(600).Title("Επεξεργασία εμπειρίας επιτηδεύματος")).TemplateName("FormFreelance"))
+            .Events(e => e.Edit("onEdited3"))
+            .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+            .Scrollable(scr => scr.Height(300))
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(datasource => datasource
+            .Ajax()
+            .PageSize(20)
+            .ServerOperation(false)
+            .Model(model =>
+            {
+                model.Id(p => p.EXP_ID);
+                model.Field(p => p.INCOME_YEAR).DefaultValue(1);
+                model.Field(p => p.MORIA).Editable(false);
+                model.Field(p => p.DAYS_AUTO).Editable(false);
+                model.Field(p => p.AITISI_ID).Editable(false);                        
+            })
+            .Create(create => create.Action("Freelance_Create", "AdminAitiseis").Data("data"))
+            .Read(read => read.Action("Freelance_Read", "AdminAitiseis").Data("data"))
+            .Update(update => update.Action("Freelance_Update", "AdminAitiseis").Data("data"))
+            .Destroy("Freelance_Destroy", "AdminAitiseis")
+            .Events(events => events.Error("error_handler3"))
+            )
+            )
+        </div>
+        <p></p>
+        </text>);
+    })
+    )
+</div>
+
+<script type="text/javascript">
+
+    function onEdited1(e) {
+        e.container.data().kendoWindow.bind("deactivate", function () { RefreshGrid1(e); });
+    }
+
+    function RefreshGrid1(e) {
+        var grid = $("#Child1").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function onEdited2(e) {
+        e.container.data().kendoWindow.bind("deactivate", function () { RefreshGrid2(e); });
+    }
+
+    function RefreshGrid2(e) {
+        var grid = $("#Child2").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function onEdited3(e) {
+        e.container.data().kendoWindow.bind("deactivate", function () { RefreshGrid3(e); });
+    }
+
+    function RefreshGrid3(e) {
+        var grid = $("#Child3").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function TransferExperiences(e) {
+        var masterGrid = $("#Master").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        if (!dataItem) {
+            MessageBoxAlert("Πρέπει πρώτα να επιλέξετε την αίτηση με κλικ επάνω στην αντίστοιχη γραμμή του πλέγματος.")
+            return;
+        }
+        var aitisiId = dataItem.AITISI_ID;
+        $.ajax({
+            url: '@Url.Action("TransferExperiences", "AdminAitiseis")?aitisiID=' + aitisiId,
+            type: 'GET',
+            data: "",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data != "") MessageBoxAlert(data);
+                RefreshChildren(aitisiId);
+            },
+            error: function () {
+                MessageBoxAlert("Προέκυψε σφάλμα. Δοκιμάστε πάλι αργότερα.");
+            }
+        });
+    }
+
+    function BatchTransfer() {
+        text = "Η διαδικασία αυτή μεταφέρει όλες τις προϋπηρεσίες κάθε υποψήφιου στις αιτήσεις<br/>";
+        text += "της τρέχουσας προκήρυξης. Να γίνει η μαζική μεταφορά των προηγούμενων προϋπηρεσιών;"
+        MessageBoxConfirm(text, "Ολική μεταφορά προϋπηρεσιών").done(function () {
+            $('#divLoading2').show();
+            $.ajax({
+                url: '@Url.Action("BatchTransferExperiences", "AdminAitiseis")',
+                type: 'GET',
+                data: "",
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    $('#divLoading2').hide();
+                    if (data != "") MessageBoxAlert(data);
+                },
+                error: function () {
+                    MessageBoxAlert("Προέκυψε σφάλμα. Δοκιμάστε πάλι αργότερα.");
+                }
+            });        
+        }).fail(function () {
+            return;
+        });
+    }
+
+    function RefreshChildren(aitisiId) {
+        $("#Child1").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#Child1").css("display", "block");
+
+        $("#Child2").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#Child2").css("display", "block");
+
+        $("#Child3").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#Child3").css("display", "block");
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    function Moriodotisi() {
+        text = "Η διαδικασία αυτή εκτελεί την τελική μοριοδότηση όλων των αιτήσεων της τρέχουσας προκήρυξης.<br/>";
+        text += "Να γίνει η μαζική μοριοδότηση όλων των αιτήσεων;"
+        MessageBoxConfirm(text, "Ολική μοριοδότηση (Supernova)").done(function () {
+            $('#divLoading').show();
+            $.ajax({
+                url: '@Url.Action("Supernova", "AdminAitiseis")',
+                type: 'GET',
+                data: "",
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    $('#divLoading').hide();
+                    if (data) MessageBoxAlert(data);
+                },
+                error: function () {
+                    MessageBoxAlert("Προέκυψε σφάλμα. Δοκιμάστε πάλι αργότερα.");
+                }
+            });         
+        }).fail(function () {
+            return;
+        });
+    }
+
+</script>
+
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Master").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function onSave1(e) {
+        var masterGrid = $("#Master").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        var aitisiId = dataItem.AITISI_ID;
+
+        //MessageBoxAlert("onSave1: " + aitisiId);
+
+        $("#Child1").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#Child1").css("display", "block");
+    }
+
+    function onSave2(e) {
+        var masterGrid = $("#Master").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        var aitisiId = dataItem.AITISI_ID;
+
+        //MessageBoxAlert("onSave2: " + aitisiId);
+
+        $("#Child2").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#Child2").css("display", "block");
+    }
+
+    function onSave3(e) {
+        var masterGrid = $("#Master").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        var aitisiId = dataItem.AITISI_ID;
+
+        //MessageBoxAlert("onSave3: " + aitisiId);
+
+        $("#Child3").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#Child3").css("display", "block");
+    }
+    
+    // ----------------------------------------------------------------
+    // this does not fire when user executes refresh - which he must do
+    // in order to edit a child grid row.
+    // -----------------------------------------------------------------
+    function change(e) {
+        var dataItem = this.dataItem(this.select());
+        var aitisiId = dataItem.AITISI_ID;
+
+        $("#Child1").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#Child1").css("display", "block");
+
+        $("#Child2").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#Child2").css("display", "block");
+
+        $("#Child3").data("kendoGrid").dataSource.read({ aitisiID: aitisiId });
+        $("#Child3").css("display", "block");
+
+    }
+
+    function data() {
+        var masterGrid = $("#Master").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        if (dataItem) {
+            return { aitisiID: dataItem.AITISI_ID };
+        }
+        else {
+            return { aitisiID: 0 };
+        }
+    }
+
+    function error_handler1(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+        }
+        $("#Child1").data("kendoGrid").dataSource.read();
+    }
+
+    function error_handler2(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+        }
+        $("#Child2").data("kendoGrid").dataSource.read();
+    }
+
+    function error_handler3(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+        }
+        $("#Child3").data("kendoGrid").dataSource.read();
+    }
+
+</script>
+

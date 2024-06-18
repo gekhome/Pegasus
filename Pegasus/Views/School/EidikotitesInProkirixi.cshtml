@@ -1,0 +1,121 @@
+﻿@model IEnumerable<Pegasus.Models.ProkirixisEidikotitesViewModel>
+@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Ειδικότητες προκήρυξης";
+    Layout = "~/Views/Shared/_SchoolLayout.cshtml";
+}
+
+<style>
+    .k-grid {
+        font-size: 11px;
+    }
+</style>
+
+
+    @Html.AntiForgeryToken()
+    <div class="page-header" style="margin:5px 30px 5px 30px">
+        <span style="margin:5px 30px 5px 30px;font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+            <font style="color:#494949;float:left;font-family:'Segoe UI'">Ειδικότητες τρέχουσας προκήρυξης</font>
+        </span>
+        <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "School", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+        <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+        <span style="margin:5px 5px 5px 10px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Εκτύπωση", "EidikotitesInProkirixiPrint", "School", null, new { @class = "btn btn-primary", style = "font-size:14px", target = "_blank" })</span>
+    </div>
+
+    <div class="body-content" style="margin:10px 30px 5px 30px">
+        @(Html.Kendo().Grid<SYS_SCHOOLSViewModel>()
+            .Name("Master")
+            .Columns(columns =>
+            {
+                columns.Bound(e => e.SCHOOL_NAME).Width(90).Width(40).Groupable(false);
+                columns.ForeignKey(f => f.SCHOOL_PERIFERIA_ID, (IEnumerable<SYS_PERIFERIES>)ViewData["periferies"], "PERIFERIA_ID", "PERIFERIA_NAME").Groupable(true).Width(80);
+            })
+            .HtmlAttributes(new { style = "font-size:14px" })
+            .Filterable()
+            .Selectable(selectable => selectable.Mode(GridSelectionMode.Single))
+            .Groupable()
+            .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+            .Scrollable(scr => scr.Height(240))
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .PageSize(40)
+            .Model(model =>
+            {
+                model.Id(h => h.SCHOOL_ID);
+                model.Field(h => h.SCHOOL_ID).Editable(false);
+            })
+                .Read(read => read.Action("SchoolsRead", "Tools"))
+            )
+            .Events(events => { events.Change("change"); })                    
+        )
+        <br />   
+        @(Html.Kendo().Grid(Model)
+        .Name("Child")
+        .AutoBind(false)
+        .Columns(columns =>
+        {
+            columns.ForeignKey(f => f.EIDIKOTITA_ID, (IEnumerable<VD_EIDIKOTITES>)ViewData["Eidikotites"], "EIDIKOTITA_ID", "EIDIKOTITA_DESC").Width(120);
+        })
+        .HtmlAttributes(new { style = "font-size:14px" })
+        .Filterable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(260))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(true)
+        .PageSize(60)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.PSE_ID);
+            model.Field(p => p.PSE_ID).Editable(false);
+            model.Field(p => p.PROKIRIXI_ID);
+            model.Field(p => p.SCHOOL_ID);
+            model.Field(p => p.EIDIKOTITA_ID);
+        })
+        //.Events(e => e.Sync("syncMaster"))
+        .Read(read => read.Action("EidikotitesRead", "Tools", null))
+        ) @* datasource*@
+ 
+        )
+
+    </div>
+
+<script>
+    function change(e) {
+        var dataItem = this.dataItem(this.select());
+        var schId = dataItem.SCHOOL_ID;
+
+        $("#Child").data("kendoGrid").dataSource.read({ schoolId: schId });
+        $("#Child").css("display", "block");
+    }
+
+    function data() {
+        var masterGrid = $("#Master").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        //alert(dataItem.SCHOOL_ID);
+        return { schoolId: dataItem.SCHOOL_ID };
+    }
+</script>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Master").data("kendoGrid");
+
+        grid.dataSource.read();
+    }
+
+</script>
+

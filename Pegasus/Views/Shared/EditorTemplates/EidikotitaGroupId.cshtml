@@ -1,0 +1,19 @@
+﻿@using System.Collections
+@using Pegasus.Models
+@using Pegasus.DAL
+@model object
+
+@(Html.Kendo().DropDownListFor(m => m)
+    .AutoBind(true)
+    .DataValueField("GROUP_ID")
+    .DataTextField("GROUP_TEXT")
+    .OptionLabel("Επιλογή...")
+    .DataSource(source =>
+    {
+        source.Read(read =>
+        {
+            read.Action("GroupsRead", "Tools");
+        })
+        .ServerFiltering(true);
+    })
+)

@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Pegasus.Models.SchoolYearsViewModel>
+@using Pegasus.Models
+
+@{
+    ViewBag.Title = "Σχολικά Έτη";
+    Layout = "~/Views/Shared/_SchoolLayout.cshtml";
+}
+
+    @Html.AntiForgeryToken()
+    <div class="page-header" style="margin:5px 30px 5px 30px">
+        <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+            <font style="color:#494949;font-family:'Segoe UI'">Σχολικά Έτη</font>
+        </span>
+        <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "School", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+        <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+    </div>
+
+    <div class="body-content" style="margin:10px 30px 5px 30px">
+        @(Html.Kendo().Grid<SchoolYearsViewModel>()
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(m => m.SY_TEXT).Width(30);
+            columns.Bound(m => m.SY_DATESTART).Width(30);
+            columns.Bound(m => m.SY_DATEEND).Width(30);
+        })
+        .HtmlAttributes(new { style="font-size:15px" })
+        .Filterable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(400))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(true)
+        .PageSize(20)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.SY_ID);
+        })
+        .Read(read => read.Action("SchoolYear_Read", "School"))
+    ) @* datasource*@
+)
+    </div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+</script>

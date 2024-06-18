@@ -1,0 +1,142 @@
+﻿@using Pegasus.DAL;
+@model List<SUPPORT>
+@{
+    ViewBag.Title = "Επικοινωνία";
+}
+
+<h1 style="margin-bottom:40px">@ViewBag.Title</h1>
+
+<style>
+    p.sansserif {
+        font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+        font-size: medium;
+    }
+</style>
+
+@(Html.Kendo().TabStrip()
+        .Name("ContactsTabStrip")
+        .Items(items =>
+        {
+            items.Add()
+                .Text("Τηλέφωνα")
+                .Selected(true)
+                .Content(@<text>
+                    <p class="sansserif"></p>
+                    <p class="sansserif" style="margin-bottom:20px;margin-left:20px">
+                        <span class="sansserif" style="font-weight:500">Υποστήριξη υποψηφίων - Ωράριο: 07:00 πμ έως 03:30 μμ</span>
+                    </p>
+                    <p class="sansserif">
+                        @foreach (var person in Model)
+                        {
+                            <div style="margin-left:20px;margin-bottom:10px;font-size:16px">@person.SUPPORT_PHONE - @person.SUPPORT_NAME</div>
+                        }
+                    </p>
+                    <p></p>
+                </text>)
+                .ContentHtmlAttributes(new { style = "min-height: 200px" });
+            items.Add()
+                .Text("Email")
+                .Content(@<text>
+                    <p class="sansserif"></p>
+                    <p class="sansserif">
+                        <span class="sansserif">Υποστήριξη μέσω E-Mail:</span>
+                    </p>
+                    <p></p>
+                    <p class="sansserif" style="font-weight:500">
+                        <span><a href="mailto:a2.pegasus@dypa.gov.gr">a2.pegasus@dypa.gov.gr</a></span><br />
+                    </p>
+                    <p></p>                    
+                    <p class ="sansserif" style="font-weight:500">
+                        Για καλύτερη και ταχύτερη εξυπηρέτησή σας, τα ερωτήματα μέσω e-mail πρέπει να περιέχουν : Ονοματεπώνυμο, ΑΦΜ, Τηλέφωνα επικοινωνίας.
+                    </p>
+                    <p class="sansserif" style="font-weight:500">
+                        Μηνύματα e-mail γραμμένα σε greeklish θα διαγράφονται και συνεπώς δεν θα τυγχάνουν απάντησης.
+                    </p>
+                </text>)
+                .ContentHtmlAttributes(new { style = "min-height: 200px" });
+            items.Add()
+                .Text("Διεύθυνση")
+                .Content(@<text>
+                    <table>
+                        <tr>
+                            <td width="300">
+                                <p></p><br />
+                                <p class="sansserif" style="text-shadow:1px 1px 2px blue; font-size:22px">
+                                    Διοίκηση Δ.ΥΠ.Α.
+                                </p>
+                                <p></p><br />
+                                <p class="sansserif" style="text-shadow:1px 1px 2px blue; font-size:larger">
+                                    Εθν. Αντιστάσεως 8
+                                </p>
+                                <p class="sansserif" style="text-shadow:1px 1px 2px blue; font-size:larger">
+                                    Τ.Κ. 17456
+                                </p>
+                                <p class="sansserif" style="text-shadow:1px 1px 2px blue; font-size:larger">
+                                    ΑΛΙΜΟΣ, ΑΤΤΙΚΗ
+                                </p>
+                            </td>
+                            <td>
+                                <p style="margin:5px">
+                                    <img style=" border:1px solid blue"src="~/Images/other/oaed-map.jpg" height="400" width="500" />
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                </text>)
+                .ContentHtmlAttributes(new { style = "min-height: 200px" });
+        })
+)
+
+<p></p><p></p>
+
+@*<aside>
+    <p>Σύνδεσμοι</p>
+    <p></p>
+
+    @(Html.Kendo().TreeView()
+        .Name("LinksTreeView")
+        .Items(items =>
+        {
+            items.Add()
+                .Text("Αρχική")
+                .Action("Index", "Home");
+            items.Add()
+                .Text("Σχετικά")
+                .Action("About", "Home");
+            items.Add()
+                .Text("Επικοινωνία")
+                .Action("Contact", "Home");
+        })
+    )
+</aside>*@
+
+<p></p><p></p>
+
+<div>
+    <hr style="background-color:#000080">
+    <table width:100% style="margin-left:auto;margin-right:auto">
+        <tr>
+            <td width="10%" align="left"><img src="~/images/metro/dypa-logo.png" height="60" width="80" /></td>
+            <td align="center">
+                <font color="#494949" size="3" style="font-weight:600">Διεύθυνση Επαγγελματικής Κατάρτισης</font>
+            </td>
+        </tr>
+        <tr>
+            <td width="10%" align="left"></td>
+            <td align="center">
+                <font color="#494949" size="3">Δημόσια Υπηρεσία Απασχόλησης (Δ.ΥΠ.Α.)</font>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+
+
+
+
+
+
+

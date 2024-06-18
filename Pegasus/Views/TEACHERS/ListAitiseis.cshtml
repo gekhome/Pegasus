@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Pegasus.DAL.sqlTEACHER_AITISEIS>
+
+@{
+    ViewBag.Title = "Αποτελέσματα";
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+<div class="row" style="margin:5px 5px 5px 5px">
+    <div style="margin:5px 20px 5px 20px">
+        <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c;float:left">
+            <font style="color:#494949;font-family:'Segoe UI'">Αποτελέσματα αξιολόγησης</font>
+        </span>
+        <span style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "TEACHERS", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+        <button class="btn btn-primary" style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+    </div>
+</div>
+
+<div class="body-content" style="margin:5px 20px 5px 20px">
+    @(Html.Kendo().Grid(Model)
+        .Name("AitisisGrid")
+        .Columns(columns =>
+        {
+            columns.Bound(x => x.PROTOCOL).Title("Προκήρυξη").Width(24);
+            columns.Bound(x => x.SCHOOL_NAME).Title("Σχολική Μονάδα").Width(36);
+            columns.Bound(c => c.EIDIKOTITA_TEXT).Title("Κλάδος-Ειδικότητα").Width(56);
+            columns.Bound(c => c.PERIFERIA_NAME).Title("Περιφέρεια Αίτησης").Width(52);
+            columns.Template(@<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("ViewAitisi", "TEACHERS") + "?AITISI_ID=#=AITISI_ID#'><span class=\"k-icon k-edit\"></span>Αίτηση</a>"
+            ).Width(18);
+            columns.Template(@<text></text>)
+            .ClientTemplate(
+            "<a class=\"k-button k-button-icontext\" href='" + Url.Action("ExperienceResultsView", "TEACHERS") + "?AITISI_ID=#=AITISI_ID#'><span class=\"k-icon k-edit\"></span>Μοριοδότηση</a>"
+            ).Width(24);
+        })
+        .Filterable()
+        .Selectable()
+        .HtmlAttributes(new { style = "display: block;font-size:13px" })
+        .Scrollable(scr => scr.Height(380))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(3))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .PageSize(20)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.AITISI_ID);
+        })
+        .Read(read => read.Action("Aitiseis_Read", "TEACHERS"))
+        .Events(e => e.Error("error_handler"))
+    )
+    )
+</div>
+<script type="text/javascript">
+
+    function getEditId() {
+        var row = $(event.srcElement).closest("tr");
+        var grid = $(event.srcElement).closest("[data-role=grid]").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        return {
+            AITISI_ID: dataItem.AITISI_ID
+        };
+    }
+
+    function RefreshGrid(e) {
+        var grid = $("#AitisisGrid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+ 
+</script>
+
+
+
+
+

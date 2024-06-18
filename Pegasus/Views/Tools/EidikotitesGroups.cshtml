@@ -1,0 +1,92 @@
+﻿@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Ειδικότητες-Ομάδες";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header" style="margin:5px 30px 5px 30px">
+    <span style="margin:5px 30px 5px 30px;font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+        <font style="color:#494949;float:left;font-family:'Segoe UI'">Ειδικότητες και προκηρυσσόμενες ομάδες</font>
+    </span>
+    <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "Admin", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+    <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+    <span style="margin:5px 5px 5px 10px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Εκτύπωση", "EidikotitesPrint", "Admin", null, new { @class = "btn btn-primary", style = "font-size:14px", target = "_blank" })</span>
+</div>
+
+<div class="body-content" style="margin:10px 30px 5px 30px">
+    @(Html.Kendo().Grid<EidikotitesViewModel>()
+    .Name("Grid")
+    .Columns(columns =>
+    {
+        columns.Bound(m => m.EIDIKOTITA_CODE).Width(12).Filterable(false);
+        columns.Bound(m => m.EIDIKOTITA_NAME).Groupable(false).Width(50)
+            .ClientFooterTemplate("Συνολ. πλήθος: #=count#")
+            .ClientGroupFooterTemplate("Πλήθος: #=count#");
+        columns.ForeignKey(f => f.KLADOS_UNIFIED, (IEnumerable<SYS_KLADOS_ENIAIOS>)ViewData["kladoiUnified"], "ΚΛΑΔΟΣ_ΚΩΔ", "ΚΛΑΔΟΣ_ΕΝΙΑΙΟΣ").Width(40);
+        columns.ForeignKey(f => f.EIDIKOTITA_GROUP_ID, (IEnumerable<SYS_EIDIKOTITES_GROUPS>)ViewData["groups"], "GROUP_ID", "GROUP_TEXT").EditorTemplateName("EidikotitaGroupId").Width(50);
+    })
+    .ToolBar(toolBar =>
+    {
+        toolBar.Save().HtmlAttributes(new { @class = "k-button-success" });
+    })
+    .HtmlAttributes(new { style="font-size:13px" })
+    .Filterable()
+    .Groupable()
+    .Navigatable()
+    .Editable(editable => editable.Mode(GridEditMode.InCell).CreateAt(GridInsertRowPosition.Top))
+    .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+    .Scrollable(scr => scr.Height(400))
+    .Pageable(pageable => pageable
+    .Refresh(true)
+    .PageSizes(true)
+    .ButtonCount(5))
+    .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(true)
+        .PageSize(60)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.EIDIKOTITA_ID);
+            model.Field(p => p.EIDIKOTITA_CODE).Editable(false);
+            model.Field(p => p.EIDIKOTITA_NAME).Editable(false);
+            model.Field(p => p.KLADOS_UNIFIED).Editable(false);
+            model.Field(p => p.EIDIKOTITA_GROUP_ID).DefaultValue(0);
+        })
+        .Read(read => read.Action("EidikotitaGroup_Read", "Tools"))
+        .Update(update => update.Action("EidikotitaGroup_Update", "Tools"))
+        .Events(events => events.Error("error_handler"))
+        .Aggregates(a =>
+        {
+            a.Add(p => p.EIDIKOTITA_NAME).Count();
+        })
+        ) @* datasource*@
+    )
+</div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+        }
+        RefreshGrid(e);
+    }
+
+</script>
+

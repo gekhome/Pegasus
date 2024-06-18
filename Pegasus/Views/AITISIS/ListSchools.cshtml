@@ -1,0 +1,116 @@
+﻿@model IEnumerable<Pegasus.Models.AITISI_SCHOOLSViewModel>
+@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Λίστα Σχολείων";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+<div class="page-header">
+    <div>
+        <span style="font-family:'Segoe UI';font-size:x-large;text-shadow:1px 1px #8c8c8c">
+            <font style="color:#494949;font-family:'Segoe UI'">Επιλογή Σχολικών Μονάδων ανά Περιφέρεια Αίτησης</font>
+        </span>
+        <span style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:18px">@Html.ActionLink("Επιστροφή", "ListAitisis", "AITISIS", null, new { @class = "btn btn-warning", style = "font-size:18px" })</span>
+        <button class="btn btn-primary" style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:18px" onclick="RefreshGrid()">Ανανέωση</button>
+    </div>
+</div>
+<div class="body-content">
+    <fieldset name="SelectedAitisiData">
+        <legend>Στοιχεία επιλεγμένης Αίτησης</legend>
+        <div class="row">
+            <div class="col-md-3">
+                <label class="control-label">Πρωτόκολλο Αίτησης:</label>
+            </div>
+            <div class="col-md-9">
+                <label class="form-control" style="max-height:34px; background-color:#EEE">@Html.Raw((ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_PROTOCOL)</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label class="control-label">Ημερομηνία Αίτησης:</label>
+            </div>
+            <div class="col-md-9">
+                <label class="form-control" style="max-height:34px; background-color:#EEE">@Html.Raw(((DateTime)(ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_DATE).ToShortDateString())</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label class="control-label">Κωδικός ειδικότητας Αίτησης:</label>
+            </div>
+            <div class="col-md-9">
+                <label class="form-control" style="max-height:34px; background-color:#EEE">@Html.Raw((ViewBag.SelectedAitisiEidikotita as SYS_EIDIKOTITESViewModel).EIDIKOTITA_DESC)</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label class="control-label">Περιφέρεια Αίτησης:</label>
+            </div>
+            <div class="col-md-9">
+                <label class="form-control" style="max-height:34px; background-color:#EEE">@Html.Raw((ViewBag.SelectedAitisiPeriferia as SYS_PERIFERIESViewModel).PERIFERIA_NAME)</label>
+            </div>
+        </div>
+    </fieldset>
+    <div class="row">
+        @(Html.Kendo().Grid(Model)
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(x => x.SCHOOL_TYPE, (IEnumerable<SYS_SCHOOLTYPES>)ViewData["schooltypes"], "SCHOOL_TYPE_ID", "SCHOOL_TYPE").Width(50);
+            columns.ForeignKey(x => x.SCHOOL, (IEnumerable<SYS_SCHOOLSViewModel>)ViewData["schools"], "SCHOOL_ID", "SCHOOL_NAME").Width(60); //.EditorTemplateName("AitisiSchoolGridEditor");
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(40);
+        })
+            .ToolBar(toolBar =>
+            {
+                toolBar.Create();
+            })
+            .Filterable()
+            .Navigatable()
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(scr => scr.Height(200))
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(3))
+            //.Events(ev => ev.Edit("onEdit"))
+            .DataSource(datasource => datasource
+            .Ajax()
+            .Batch(false)
+            .PageSize(20)
+            .ServerOperation(false)
+            .Events(events => events.Error("error_handler"))
+
+            .Model(model =>
+            {
+                model.Id(p => p.ID);
+                model.Field(p => p.SCHOOL_TYPE).DefaultValue((int)ViewData["defaultSchoolType"]);
+                model.Field(p => p.SCHOOL).DefaultValue((int)ViewData["defaultSchool"]);
+            })
+            .Create(create => create.Action("Schools_Create", "AITISIS", new { aitisiID = (ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_ID }))
+            .Update(update => update.Action("Schools_Update", "AITISIS", new { aitisiID = (ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_ID }))
+            .Read(read => read.Action("Schools_Read", "AITISIS", new {aitisiID = (ViewBag.SelectedAitisiData as AitisisViewModel).AITISI_ID}))
+            .Destroy("Schools_Destroy", "AITISIS")
+        )
+        )
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function onEdit(e) {
+        if (e.model.isNew()) {
+            e.container.find('[data-role=combobox]').data().kendoComboBox.select(0);
+        }
+    }
+
+</script>
+
+
+

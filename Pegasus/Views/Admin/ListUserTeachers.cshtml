@@ -1,0 +1,121 @@
+﻿@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Λογαριασμοί υποψηφίων";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header" style="margin:5px 30px 5px 30px">
+    <span style="margin:5px 60px 5px 60px;font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+        <font style="color:#494949;float:left;font-family:'Segoe UI'">Λογαριασμοί υποψηφίων εκπαιδευτικών</font>
+    </span>
+    <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "Admin", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+    <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>    
+</div>
+
+<div class="body-content" style="margin:10px 30px 5px 30px">
+    @(Html.Kendo().Grid<UserTeacherEditViewModel>()
+        .Name("Master")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.USERNAME).Groupable(false).Width(40);
+            columns.Bound(c => c.PASSWORD).Groupable(false).Width(30);
+            columns.Bound(c => c.AFM).Groupable(false).Width(30);
+            columns.Bound(c => c.CREATEDATE).Groupable(false).Width(35).Format("{0:dd/MM/yyyy}");
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(35);
+        })
+        .ToolBar(toolBar =>
+        {
+            toolBar.Create();
+        })
+        .HtmlAttributes(new { style="font-size:14px" })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Filterable()
+        .Selectable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(350))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(10))
+        .DataSource(datasource => datasource
+            .Ajax()
+            .PageSize(60)
+            .ServerOperation(true)
+            .Events(events => events.Error("error_handler"))
+            .Model(model => model.Id(p => p.USER_ID))
+            .Create(create => create.Action("UserTeacher_Create", "Admin"))
+            .Read(read => read.Action("UserTeacher_Read", "Admin"))
+            .Update(update => update.Action("UserTeacher_Update", "Admin"))
+            .Destroy(destroy => destroy.Action("UserTeacher_Destroy", "Admin"))
+        )
+        .Events(events => events.Change("change"))
+    )
+</div>
+
+<div class="body-content" style="margin:10px 30px 5px 30px">
+    @(Html.Kendo().Grid<Pegasus.Models.TeacherAccountInfoViewModel>()
+        .Name("Child")
+        .Columns(columns =>
+        {
+            columns.Bound(m => m.FULLNAME).Width(40);
+            columns.Bound(m => m.FATHERNAME).Width(20);
+            columns.Bound(m => m.MOTHERNAME).Width(20);
+            columns.Bound(m => m.BIRTHDATE).Width(20);
+            columns.Bound(m => m.TELEPHONES).Width(40);
+            columns.Bound(m => m.AMKA).Width(20);
+        })
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(80))
+        .HtmlAttributes(new { style = "display:block;font-size:14px" })        
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .PageSize(20)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.USER_ID);
+        })
+        .Read(read => read.Action("UserTeacherInfo_Read", "Admin").Data("data"))
+    ) @* datasource*@
+    )
+</div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Master").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function data() {
+        var masterGrid = $("#Master").data("kendoGrid");
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        if (dataItem) {
+            return { afm: dataItem.AFM };
+        }
+        else {
+            return { afm: "" };
+        }
+    }
+
+    function change(e) {
+        var dataItem = this.dataItem(this.select());
+        var user_afm = dataItem.AFM;
+
+        $("#Child").data("kendoGrid").dataSource.read({ afm: user_afm });
+        $("#Child").css("display", "block");
+    }
+
+</script>
+
+
+
+
+

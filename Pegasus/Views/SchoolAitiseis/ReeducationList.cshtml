@@ -1,0 +1,134 @@
+﻿@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Επιμορφώσεις";
+    Layout = "~/Views/Shared/_LayoutMin.cshtml";
+    int aitisi_Id = (int)ViewData["aitisi_id"];
+}
+<div class="form-horizontal" style="margin:5px 60px 5px 30px;width:800px">
+    <div class="row" style="margin:5px 60px 5px 30px;width:800px">
+        <fieldset style="width:100%" name="SelectedAitisiData">
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="control-label">Εκπαιδευτικός:</label>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-control smartShortText" title="@Html.Raw((ViewBag.SelectedAitisiData as sqlTEACHER_AITISEIS).FULLNAME)" style="max-height:34px; background-color:#EEE">
+                        @Html.Raw((ViewBag.SelectedAitisiData as sqlTEACHER_AITISEIS).FULLNAME)
+                    </label>
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label">Πρωτόκολλο:</label>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-control smartShortText" title="@Html.Raw((ViewBag.SelectedAitisiData as sqlTEACHER_AITISEIS).AITISI_PROTOCOL)" style="max-height:34px; background-color:#EEE">
+                        @Html.Raw((ViewBag.SelectedAitisiData as sqlTEACHER_AITISEIS).AITISI_PROTOCOL)
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="control-label">Περιφέρεια:</label>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-control smartShortText" title="@Html.Raw((ViewBag.SelectedAitisiData as sqlTEACHER_AITISEIS).PERIFERIA_NAME)" style="max-height:34px; background-color:#EEE">
+                        @Html.Raw((ViewBag.SelectedAitisiData as sqlTEACHER_AITISEIS).PERIFERIA_NAME)
+                    </label>
+                </div>
+                <div class="col-md-2">
+                    <label class="control-label">Ειδικότητα:</label>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-control smartShortText" title="@Html.Raw((ViewBag.SelectedAitisiData as sqlTEACHER_AITISEIS).EIDIKOTITA_TEXT)" style="max-height:34px; background-color:#EEE">
+                        @Html.Raw((ViewBag.SelectedAitisiData as sqlTEACHER_AITISEIS).EIDIKOTITA_TEXT)
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+        <p></p>
+    </div>
+</div>
+
+<div class="row" style="margin:10px 20px 5px 20px">
+    <div>
+        <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+            <font style="color:#494949;font-family:'Segoe UI'">Καρτέλα επιμορφώσεων </font>
+        </span>
+        <span style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">
+            <a class="btn btn-warning" , style="font-size:14px" href="#" onclick="javascript:window.close();opener.window.focus();">Κλείσιμο καρτέλας</a>
+        </span>
+        <span style="margin:0px 4px 5px 4px;float:right;font-family:'Segoe UI';font-size:14px">
+            @Html.ActionLink("Μεταφορά προηγούμενων", "TransferReeducations", "SchoolAitiseis", new { aitisiId = aitisi_Id }, new { @class = "btn btn-primary", style = "font-size:14px" })
+        </span>
+    </div>
+</div>
+
+<div class="body-content" style="margin:10px 20px 5px 20px">
+        @(Html.Kendo().Grid<Pegasus.Models.ReeducationViewModel>()
+            .Name("Grid")
+            .HtmlAttributes(new { style = "font-size:14px" })
+            .Columns(columns =>
+            {
+                columns.Bound(m => m.CERTIFICATE_DATE).Width(23).Groupable(false).Filterable(false);
+                columns.Bound(m => m.CERTIFICATE_FOREAS).Width(70);
+                columns.Bound(m => m.CERTIFICATE_TITLE).Width(70).Groupable(false);
+                columns.Bound(m => m.CERTIFICATE_HOURS).Width(15).Groupable(false)
+                    .ClientFooterTemplate("Σύν: #=sum#")
+                    .ClientGroupFooterTemplate("Σύν: #=sum#");
+                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(44);
+            })
+            .ToolBar(toolBar =>
+            {
+                toolBar.Create();
+            })
+            .Navigatable()
+            .Filterable()
+            .Groupable()
+            .Editable(editable => editable.Mode(GridEditMode.InLine).CreateAt(GridInsertRowPosition.Top))
+            .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+            .Scrollable(scr => scr.Height(380))
+            .Pageable(pageable => pageable
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+            .DataSource(datasource => datasource
+            .Ajax()
+            .PageSize(40)
+            .ServerOperation(false)
+            .Model(model =>
+            {
+                model.Id(p => p.EDUCATION_ID);
+            })
+            .Create(create => create.Action("Reeducation_Create", "SchoolAitiseis", new { aitisiID = aitisi_Id }))
+            .Read(read => read.Action("Reeducation_Read", "SchoolAitiseis", new { aitisiID = aitisi_Id }))
+            .Update(update => update.Action("Reeducation_Update", "SchoolAitiseis", new { aitisiID = aitisi_Id }))
+            .Destroy(destroy => destroy.Action("Reeducation_Destroy", "SchoolAitiseis"))
+            .Events(events => events.Error("error_handler"))
+            .Aggregates(a =>
+            {
+                a.Add(p => p.CERTIFICATE_HOURS).Sum();
+            })            
+            )
+        )
+    </div>
+
+
+<script type="text/javascript">
+
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br />";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+        }
+        $("#Grid").data("kendoGrid").dataSource.read();
+    }
+
+</script>

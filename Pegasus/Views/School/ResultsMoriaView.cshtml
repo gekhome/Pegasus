@@ -1,0 +1,245 @@
+﻿@model Pegasus.Models.ExperienceResultsViewModel
+@{
+    ViewBag.Title = "Αποτελέσματα Μοριοδότησης Αίτησης";
+    Layout = "~/Views/Shared/_LayoutMin.cshtml";
+    var aitisiID = Model.AITISI_ID;
+}
+<style>
+    .control-label {
+        font-family: 'Segoe UI';
+        white-space: pre-line;
+    }
+
+    .page-header {
+        border-bottom: 2px solid #4F81BD;
+        font-family: 'Segoe UI';
+        font-size: x-large;
+    }
+
+    .k-textbox {
+        display: block;
+        width: 100%;
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: #555555;
+        vertical-align: middle;
+        background-color: #ffffff;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    }
+
+        .k-textbox:focus {
+            border-color: #66afe9;
+            outline: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+        }
+
+    .form-horizontal .control-label {
+        text-align: left;
+    }
+
+    th{
+        text-align:center;
+        border-bottom-style: double;
+        border-bottom-width: 1px;
+    }
+
+    td {
+        border-right-style: solid;
+        border-right-width: 1px;
+        border-left-style: solid;
+        border-left-width: 1px;
+    }
+
+    table{
+        border: thin solid black;
+        margin-bottom: 7px;
+    }
+
+</style>
+
+<link href="@Url.Content("~/Content/mvcNotify.css")" rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/mvcNotify.js")" type="text/javascript"></script>
+<div class="body-content" style="margin:0px 60px 0px 60px;width:800px">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="page-header">
+            <div class="row">
+                <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+                    <font style="color:#494949;font-family:'Segoe UI'">Αποτελέσματα μοριοδότησης αίτησης</font>
+                </span>
+                <span style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">
+                    <a class="btn btn-warning" , style="font-size:14px" href="#" onclick="javascript:window.close();opener.window.focus();">Κλείσιμο καρτέλας</a>
+                </span>
+                <span style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">
+                    @Html.ActionLink("Εκτύπωση", "ResultsMoriaPrint", "School", new { aitisiId = aitisiID }, new { @class = "btn btn-primary", style = "font-size:14px", target = "_blank" })
+                </span>
+            </div>
+        </div>
+        <div class="form-horizontal">
+            <fieldset name="GeneralData">
+                <legend>Στοιχεία Αίτησης</legend>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.AITISI.LASTNAME, htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-8">
+                    <label class="form-control  smartShortText" title="@Html.DisplayFor(model => model.LASTNAME)" style="background-color:#EEE">
+                        @Html.DisplayFor(model => model.LASTNAME)
+                    </label>
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.AITISI.FIRSTNAME, htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-8">
+                    <label class="form-control smartShortText" title="@Html.DisplayFor(model => model.FIRSTNAME)" style="background-color:#EEE">
+                        @Html.DisplayFor(model => model.FIRSTNAME)
+                    </label>
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.AITISI.AITISI_PROTOCOL, htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-8">
+                    <label class="form-control smartShortText" title="@Html.DisplayFor(model => model.AITISI.AITISI_PROTOCOL)" style="background-color:#EEE">
+                        @Html.DisplayFor(model => model.AITISI.AITISI_PROTOCOL)
+                    </label>
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => model.EIDIKOTITA.EIDIKOTITA_DESC, htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-8">
+                    <label class="form-control smartShortText" title="@Html.DisplayFor(model => model.EIDIKOTITA.EIDIKOTITA_DESC)" style="background-color:#EEE">
+                        @Html.DisplayFor(model => model.EIDIKOTITA.EIDIKOTITA_DESC)
+                    </label>
+                </div>
+            </fieldset>
+            <fieldset name="MoriaData">
+                <legend>Ανάλυση Μορίων</legend>
+                <table align="center">
+                    <tr style="text-align:center;">
+                        <th style="border-right-width:1px;border-right-style:solid;">Μόρια Εκκίνησης</th>
+                        <th>Μόρια προϋπηρεσιών</th>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_SOCIAL, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_SOCIAL)</label>
+                        </td>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.TEACHING_MORIA_FINAL, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.TEACHING_MORIA_FINAL)</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_ANERGIA, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_ANERGIA)</label>
+                        </td>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.VOCATION_MORIA_FINAL, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.VOCATION_MORIA_FINAL)</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_PTYXIO, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_PTYXIO)</label>
+                        </td>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.FREELANCE_MORIA_FINAL, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.FREELANCE_MORIA_FINAL)</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_MSC, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_MSC)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_PHD, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_PHD)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_PED, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_PED)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_AED_MSC, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_AED_MSC)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_AED_PHD, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_AED_PHD)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_COMPUTER, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_COMPUTER)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(model => model.AITISI.MORIA_LANG, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_LANG)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_EPIMORFOSI1, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_EPIMORFOSI1)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_EPIMORFOSI2, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_EPIMORFOSI2)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_EPIMORFOSI3, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_EPIMORFOSI3)</label>
+                        </td>
+                        <td></td>
+                    </tr>
+                </table>
+            </fieldset>
+            <fieldset>
+                <legend>Γενικό Σύνολο Αίτησης</legend>
+                <table>
+                    <tr>
+                        <td style="margin:1px 1px 1px 2px">
+                            @Html.LabelFor(model => model.AITISI.MORIA_TOTAL, htmlAttributes: new { @class = "control-label" }):
+                            <label>@Html.DisplayFor(model => model.AITISI.MORIA_TOTAL)</label>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
+    }
+</div>

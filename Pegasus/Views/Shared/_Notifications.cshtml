@@ -1,0 +1,92 @@
+@using Pegasus.Extensions
+
+@{
+    var errorList = Html.GetNotifications(NotificationType.ERROR);
+    var warningList = Html.GetNotifications(NotificationType.WARNING);
+    var successList = Html.GetNotifications(NotificationType.SUCCESS);
+    var infoList = Html.GetNotifications(NotificationType.INFO);
+}
+<!-- display errors -->
+@if (errorList != null)
+{
+    <div class="alert alert-danger alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        @if(errorList.Count() > 1){
+            <strong><i class="fa fa-times" aria-hidden="true"></i> Υπάρχουν @errorList.Count() σφάλματα: </strong>
+            <ul>
+                @foreach (String message in errorList)
+                {
+                    <li>@Html.Raw(message)</li>
+                }
+            </ul>
+        }
+        else{
+            <strong><i class="fa fa-times" aria-hidden="true"></i> Σφάλμα: </strong>
+            @Html.Raw(errorList.First())
+        }
+    </div>
+}
+
+<!-- display warnings -->
+@if (warningList != null)
+{
+    <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        @if(warningList.Count() > 1){
+            <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Υπάρχουν @warningList.Count() προειδοποιήσεις: </strong>
+            <ul>
+                @foreach (String message in warningList)
+                {
+                    <li>@Html.Raw(message)</li>
+                }
+            </ul>
+        }
+        else{
+            <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Προειδοποίηση: </strong>
+            @Html.Raw(warningList.First())
+        }
+    </div>
+}
+
+<!-- display success -->
+@if (successList != null)
+{
+    <div class="alert alert-success alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        @if(successList.Count() > 1){
+            <strong><i class="fa fa-check" aria-hidden="true"></i> Υπάρχουν @successList.Count() επιτυχείς ειδοποιήσεις: </strong>
+            <ul>
+                @foreach (String message in successList)
+                {
+                    <li>@Html.Raw(message)</li>
+                }
+            </ul>
+        }
+        else{
+            <strong><i class="fa fa-check" aria-hidden="true"></i> Επιτυχία. </strong>
+            @Html.Raw(successList.First())
+        }
+    </div>
+}
+
+<!-- display success -->
+@if (infoList != null)
+{
+    <div class="alert alert-info alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        @if(infoList.Count() > 1){
+            <strong><i class="fa fa-info" aria-hidden="true"></i> Υπάρχουν @infoList.Count() ειδοποιήσεις: </strong>
+            <ul>
+                @foreach (String message in infoList)
+                {
+                    <li>@Html.Raw(message)</li>
+                }
+            </ul>
+        }
+        else{
+            <strong><i class="fa fa-info" aria-hidden="true"></i> </strong>
+            @Html.Raw(infoList.First())
+        }
+    </div>
+}
+

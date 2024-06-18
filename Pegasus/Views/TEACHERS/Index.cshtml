@@ -1,0 +1,304 @@
+﻿
+@{
+    ViewBag.Title = "Εκπαιδευτικοί";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    a.imglink01 {
+        background: url("~/Images/metro/teacher-person02.png") no-repeat top left;
+        display: block;
+        width: 150px;
+        height: 150px;
+        text-indent: -9999px; /* hides the link text */
+    }
+    .buttonImg{
+        background-color: #2E8CEF; /* #2E8CEF; */
+    }
+    .buttonImg:hover{
+        background-color: #ffffff;
+    }
+    .col-md-4{
+        color: #00008b;
+        font-family:'Segoe UI';
+    }
+
+    .inline-picture {
+        float: left;
+        margin: 30px 30px 20px 30px;
+        text-align: center;
+    }
+
+    .inline-picture img {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+</style>
+
+<head>
+    <title></title>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    @*<h2>Σελίδα εργασιών Εκπαιδευτικών</h2> #FFA531
+    <p></p>*@
+    <p />
+    <h1>Σελίδα ηλεκτρονικής αίτησης υποψηφίων ωρομισθίων εκπαιδευτικών ΙΕΚ 
+    <img src="~/Images/metro/dypa-logo.png" width="60" height="40" style="margin-left:10px"/>
+    </h1>
+    <p></p>
+    @*<h1>Εκπαιδευτικών Μονάδων ΙΕΚ</h1>
+    <p/>
+    <br />*@
+
+    <table class="list-group">
+        <tr class="list-group-item">
+            <td style="background-color:#2E8CEF">
+                <div class="col-md-2 tooltip1" style="margin-top: 10px">
+                    <a href='@Url.Action("TeacherEdit", "TEACHERS")'>
+                        <img class="img-app" src='@Url.Content("~/Images/menu/person.png")' height="60" width="60" />
+                    </a>
+                    <span class="tooltip1text">Καταχώρηση ατομικών στοιχείων υποψηφίου</span>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-10" style="margin-left:50px">
+                    <p style="font-size:large;color:black">
+                        <a href='@Url.Action("TeacherEdit", "TEACHERS")' style="font-weight:bold">Υποβολή ατομικών στοιχείων</a>
+                    </p>
+                    <p style="font-size:16px">
+                        Επιλέξτε το εικονίδιο και συμπληρώστε όλα τα πεδία που ζητούνται από την
+                        ηλεκτρονική φόρμα. Τα προσωπικά στοιχεία συμπληρώνονται μόνο μια φορά και
+                        συνδέονται με κάθε αίτηση που υποβάλλετε.
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr class="list-group-item">
+            <td style="background-color:#2E8CEF">
+                <div class="col-md-2 tooltip1">
+                    <a href='@Url.Action("AitisiCreate", "AITISIS")'>
+                        <img class="img-app" src='@Url.Content("~/Images/menu/doc-add.png")' height="60" width="60" />
+                    </a>
+                    <span class="tooltip1text">Καταχώρηση και υποβολή νέας αίτησης</span>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-10" style="margin-left:50px">
+                    <p style="font-size:large;color:black">
+                        <a href='@Url.Action("AitisiCreate", "AITISIS")' style="font-weight:bold">Υποβολή νέας αίτησης</a>
+                    </p>
+                    <p style="font-size:16px">
+                        Στην επιλογή αυτή συμπληρώνετε τα στοιχεία που ζητούνται από την ηλεκτρονική φόρμα. 
+                        Την επιλογή αυτή χρησιμοποιείτε για να δημιουργείτε κάθε
+                        φορά μια νέα αίτηση (π.χ. σε άλλη ειδικότητα ή/και σε άλλη περιφέρεια).
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr class="list-group-item">
+            <td style="background-color:#2E8CEF">
+                <div class="col-md-2 tooltip1">
+                    <a href='@Url.Action("ListAitisis", "AITISIS")'>
+                        <img class="img-app" src='@Url.Content("~/Images/menu/doc-edit.png")' height="60" width="60" />
+                    </a>
+                    <span class="tooltip1text">Επεξεργασία καταχωρημένων αιτήσεων και ΙΕΚ προτίμησης</span>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-10" style="margin-left:50px">
+                    <p style="font-size:large;color:black">
+                        <a href='@Url.Action("ListAitisis", "AITISIS")' style="font-weight:bold">Διαχείριση αιτήσεων</a>
+                    </p>
+                    <p style="font-size:16px">
+                        Από εδώ διαχειρίζεστε τις αιτήσεις που έχετε δημιουργήσει. Μπορείτε να κάνετε έλεγχο, 
+                        αλλαγές και να τις εκτυπώσετε. Εδώ ορίζετε, επίσης, τις Σχολικές Μονάδες για τις
+                        οποίες θέλετε να αξιολογηθήτε.
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr class="list-group-item">
+            <td style="background-color:#2E8CEF">
+                <div class="col-md-2 tooltip1">
+                    <a href='@Url.Action("UploadDocuments", "TeacherUpload")'>
+                        <img class="img-app" src='@Url.Content("~/Images/menu/cloud-upload.png")' height="60" width="60" />
+                    </a>
+                    <span class="tooltip1text">Μεταφόρτωση δικαιολογητικών αίτησης στον εξυπηρετητή</span>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-10" style="margin-left:50px">
+                    <p style="font-size:large;color:black">
+                        <a href='@Url.Action("UploadDocuments", "TeacherUpload")' style="font-weight:bold">Ανέβασμα δικαιολογητικών</a>
+                    </p>
+                    <p style="font-size:16px">
+                        Με την επιλογή αυτή μπορείτε να ανεβάσετε τα δικαιολογητικά σας, σε μορφή PDF, στον εξυπηρετητή της εφαρμογής.
+                        Διαβάστε την ενημέρωση στο κάτω μέρος της σελίδας (κόκκινο κουμπί).
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr class="list-group-item">
+            <td style="background-color:#2E8CEF">
+                <div class="col-md-2 tooltip1">
+                    <a href='@Url.Action("ListAitiseis", "TEACHERS")'>
+                        <img class="img-app" src='@Url.Content("~/Images/menu/results.png")' height="60" width="60" />
+                    </a>
+                    <span class="tooltip1text">Ενημέρωση για τα αποτελέσματα αξιολόγησης</span>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-10" style="margin-left:50px">
+                    <p style="font-size:large;color:black">
+                        <a href='@Url.Action("ListAitiseis", "TEACHERS")' style="font-weight:bold">Αποτελέσματα αξιολόγησης</a>
+                    </p>
+                    <p style="font-size:16px">
+                        Με την επιλογή αυτή μπορείτε να ενημερωθείτε για τα αποτελέσματα της διαδικασίας αξιολόγησής σας.
+                        Συνιστά, επίσης, ένα βοήθημα στη σύνταξη των πιθανών ενστάσεων, ώστε αυτές να είναι σαφείς και συνεκτικές.
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr class="list-group-item">
+            <td style="background-color:#2E8CEF">
+                <div class="col-md-2 tooltip1">
+                    <a href='@Url.Action("UploadData", "AITISIS")'>
+                        <img class="img-app" src='@Url.Content("~/Images/menu/doc-upload.png")' height="60" width="60" />
+                    </a>
+                    <span class="tooltip1text">Μεταφόρτωση εντύπων ένστασης στον εξυπηρετητή</span>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-10" style="margin-left:50px">
+                    <p style="font-size:large;color:black">
+                        <a href='@Url.Action("UploadData", "AITISIS")' style="font-weight:bold">Υποβολή ένστασης</a>
+                    </p>
+                    <p style="font-size:16px">
+                        Με την επιλογή αυτή μπορείτε να ανεβάσετε συμπληρωμένο το έντυπο της ένστασής σας σε μορφή PDF ή DOC, DOCX
+                        (αρχείο Word) στον εξυπηρετητή της εφαρμογής.
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr class="list-group-item">
+            <td style="background-color:#2E8CEF">
+                <div class="col-md-2 tooltip1">
+                    <a href='@Url.Action("ListAitisisOriginal", "AITISIS")'>
+                        <img class="img-app" src='@Url.Content("~/Images/menu/doc-copy.png")' height="60" width="60" />
+                    </a>
+                    <span class="tooltip1text">Πρωτότυπα αντίγραφα υποβληθέντων αιτήσεων</span>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-10" style="margin-left:50px">
+                    <p style="font-size:large;color:black">
+                        <a href='@Url.Action("ListAitisisOriginal", "AITISIS")' style="font-weight:bold">Πρωτότυπες αιτήσεις</a>
+                    </p>
+                    <p style="font-size:16px">
+                        Με την επιλογή αυτή μπορείτε να βρείτε αντίγραφα των
+                        πρωτότυπων αιτήσεων, όπως υποβλήθηκαν - δηλαδή χωρίς τις τυχόν αλλαγές
+                        από τις επιτροπές αξιολόγησης.
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr id="info" class="list-group-item" style="background-color:lightgray;">
+            <td>
+                <img src='@Url.Content("~/Images/metro/information-icon-blue.png")' height="30" width="30" style="margin-top:0px;margin-right:10px" />
+            </td>
+            <td>
+                <div class="col-md-12" style="margin-left:10px;margin-top:5px">
+                    <p style="font-size:16px;font-style:italic">
+                        <font style="color:#00008b;">Επιλογή από το εικονίδιο ή την επικεφαλίδα.</font>
+                    </p>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-3" style="margin-left:10px;margin-top:5px;margin-left:40px">
+                    <a href="@Url.Content("~/Files/ΕΓΧΕΙΡΙΔΙΟ ΕΚΠΑΙΔΕΥΤΕΣ 2021.pdf")" class="btn btn-primary" target="_blank">Εγχειρίδιο χρήσης</a>
+                </div>
+            </td>
+            <td>
+                <div class="col-md-3" style="margin-left:40px;margin-top:5px">
+                    <a href="@Url.Content("~/Files/ΕΝΤΥΠΟ ΕΝΣΤΑΣΗΣ ΙΕΚ ΟΑΕΔ.docx")" class="btn btn-info">Έντυπο ένστασης</a>
+                </div>
+            </td>
+
+            <td>
+                <button class="btn btn-danger" style="margin:10px 5px 5px 60px;float:right;font-family:'Segoe UI';font-size:15px" onclick="showAttention()">Διαβάστε αυτό</button>
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+<div id="modalWindow">
+    <div class="inline-picture">
+        <img src='@Url.Content("~/Images/metro/information-icon-blue.png")' height="100" width="100" alt="Σημαντικό" />
+    </div>
+    <p style="margin-top:10px;font-size:16px">
+        Στην εφαρμογή ανεβάζετε, σκαναρισμένα σε μορφή αρχείων PDF, τα απαιτούμενα δικαιολογητικά, όπως Δελτίο ταυτότητας, πτυχία,<br /> 
+        μεταπτυχιακά, ξένες γλώσσες, επιμορφώσεις, πιστοποίηση εκπαιδευτών ενηλίκων, βεβαίωση ανεργίας, δικαιολογητικά οικογενειακής<br />
+        κατάστασης (τρίτεκνος,πολύτεκνος κλπ), διδακτική εμπειρία, επαγγελματική εμπειρία κ.λπ.<br />
+        <ol style="font-size:16px">
+            <li style="margin-bottom:5px">
+                Οι υποψήφιοι που υποβάλλουν αίτηση για πρώτη φορά, ανεβάζουν ΟΛΑ τα απαραίτητα δικαιολογητικά που αναφέρονται στην Προκήρυξη,<br/> 
+                και αποδεικνύουν αυτά που αναφέρονται στην αίτησή τους.
+            </li>
+            <li style="margin-bottom:5px">
+                Οι υποψήφιοι που έχουν υποβάλει κατά το έτος κατάρτισης 2021-22 αίτηση, στο ίδιο ΙΕΚ που υποβάλλουν φέτος και στην ίδια ειδικότητα, ανεβάζουν<br />
+                α) Τα δικαιολογητικά που αποδεικνύουν τα κοινωνικά κριτήρια<br /> 
+                β) ΜΟΝΟ ΤΑ ΕΠΙΠΛΕΟΝ αποκτηθέντα δικαιολογητικά επαγγελματικής και διδακτικής εμπειρίας και επιμορφώσεων και λοιπών ακαδημαϊκών προσόντων, 
+                δηλαδή ΜΟΝΟ όσα αποκτήθηκαν κατά το έτος κατάρτισης 2021-2022<br /> 
+                γ) Όποιο άλλο δικαιολογητικό ΔΕΝ έχουν υποβάλει στο παρελθόν, και αναφέρεται στην αίτησή τους.
+            </li>
+        </ol>
+    </p>
+    <p style="font-size:16px;margin-left:20px">
+        Το ανέβασμα των δικαιολογητικών γίνεται από την αντίστοιχη επιλογή του μενού της σελίδας αυτής ('Ανέβασμα δικαιολογητικών').
+    </p>
+    <div style="margin-left:0px;margin-top:20px;text-align:left;">
+        <button id="close" class="k-button" style="margin-left:320px;font-size:16px">Κλείσιμο</button>
+    </div>
+</div>
+
+<script id="events" type="text/javascript">
+
+    $(document).ready(function () {
+
+        wnd = $("#modalWindow").kendoWindow({
+            title: "Ενημέρωση για προϋπηρεσίες",
+            modal: true,
+            visible: false,
+            resizable: false,
+            height: 460,
+            width: 740
+        }).data("kendoWindow");
+
+    });
+
+    function showAttention() {
+        // Open user-dialog window
+        wnd.center().open();
+
+        $("#close").click(function () {
+            wnd.close();
+        });
+    }
+
+	$(".img-app").hover(function(){
+        $(this).attr("src", function(index, attr){
+            return attr.replace(".png", "-active.png");
+        });
+    }, function(){
+        $(this).attr("src", function(index, attr){
+            return attr.replace("-active.png", ".png");
+        });
+    });
+
+</script>
+
+

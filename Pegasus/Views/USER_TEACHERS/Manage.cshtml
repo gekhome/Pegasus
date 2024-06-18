@@ -1,0 +1,171 @@
+﻿@model Pegasus.Models.UserTeacherViewModel
+
+@{
+    ViewBag.Title = "Προβολή Λογαριασμού";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <style>
+        .k-textbox {
+            display: block;
+            width: 100%;
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.428571429;
+            color: #555555;
+            vertical-align: middle;
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        }
+
+            .k-textbox:focus {
+                border-color: #66afe9;
+                outline: 0;
+                -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+            }
+    </style>
+</head>
+<body>
+    <p style="padding:20px 10px 20px 10px"></p>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true)
+            <fieldset>
+                <legend style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Καρτέλα προβολής λογαριασμού εκπαιδευτικού</legend>
+                <label style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;font-style:italic;font-size:14px;color:darkred">
+                    * Η ανάκτηση κωδικών λειτουργεί μόνον εφόσον έχετε υποβάλλει ατομικά στοιχεία *<br />
+                    * Σε αντίθετη περίπτωση επικοινωνήστε μαζί μας να σας στείλουμε τους κωδικούς *
+                </label>
+                <table class="col-md-8" style="border:solid;border-width:thin;margin:10px 0px 10px 0px">
+                    <tr>
+                        <th style="background-color:#4f81bd;padding-left:20px">
+                            <p></p>
+                            <img src="~/Images/metro/user_security-white.png" width="60" height="60" style="margin:0px 20px 0px 10px" />
+                            <font style="font-family:'Segoe UI';font-size:xx-large;color:white;">Προβολή</font>
+                            <p></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p></p>
+                            <div class="form-group" style="margin-left:1px">
+                                @Html.LabelFor(model => model.USERNAME, new { @class = "control-label col-md-4" })
+                                <div class="col-md-6">
+                                    <label class="form-control" style="min-height:18px; background-color:#EEE">@Html.DisplayFor(model => model.USERNAME)</label>
+                                </div>
+                            </div>
+                            <p></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p></p>
+                            <div class="form-group" style="margin-left:1px">
+                                @Html.LabelFor(model => model.PASSWORD, new { @class = "control-label col-md-4" })
+                                <div class="col-md-6">
+                                    <label class="form-control" style="min-height:18px; background-color:#EEE">@Html.DisplayFor(model => model.PASSWORD)</label>
+                                </div>
+                            </div>
+                            <p></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p></p>
+                            <div class="form-group" style="margin-left:1px">
+                                @Html.LabelFor(model => model.AFM, new { @class = "control-label col-md-4" })
+                                <div class="col-md-6">
+                                    @Html.EditorFor(model => model.AFM)
+                                    @Html.ValidationMessageFor(model => model.AFM)
+                                </div>
+                            </div>
+                            <p></p>
+                            <div class="form-group" style="margin-left:1px">
+                                @Html.LabelFor(model => model.AMKA, new { @class = "control-label col-md-4" })
+                                <div class="col-md-6">
+                                    @Html.EditorFor(model => model.AMKA)
+                                    <br />
+                                    @Html.ValidationMessageFor(model => model.AMKA)
+                                </div>
+                            </div>
+                            <p></p>
+                        </td>
+                    </tr>
+                </table>
+
+                    <div class="form-group">
+                        <div style="float:left;" class="col-md-12">
+                            <input style="font-family:'Segoe UI';font-size:large" type="submit" value="Προβολή" class="btn btn-default" />
+                            <span style="margin:0px 5px 5px 5px;font-family:'Segoe UI';font-size:18px">
+                                @Html.ActionLink("Είσοδος", "Login", "USER_TEACHERS", null,
+                                new { @class = "btn btn-default", style = "font-size:18px", target = "_blank" })
+                            </span>
+                            <span style="margin:0px 5px 5px 5px;font-family:'Segoe UI';font-size:18px">
+                                @Html.ActionLink("Αρχική", "Index", "Home", null,
+                                new { @class = "btn btn-default", style = "font-size:18px", target = "_blank" })
+                            </span>
+                        </div>
+                    </div>
+
+</fieldset>
+        </div>
+    }
+
+    <div class="row" style="margin-top:10px;margin-left:4px;max-width:620px">
+        @(Html.Kendo().PanelBar()
+        .Name("Help")
+        .Items(items =>
+        {
+            items.Add()
+                .Text("Γιατί βρίσκομαι σε αυτή την οθόνη;")
+                .Selected(true)
+                .Expanded(false)
+                .Content(
+                @<text>
+                    <div style="margin-left:6px;margin-right:6px">
+                        <font style="font-family:'Segoe UI';font-size:large">Τι κάνω σε αυτή την οθόνη;</font>
+                        <ul>
+                            <li>
+                                (A) Βρεθήκατε εδώ γιατί ξεχάσατε τα στοιχεία του λοογαρισμού σας (όνομα χρήστη ή/και
+                                κωδικό πρόσβασης). Πληκτρολογείστε το ΑΦΜ σας και πατήστε "Προβολή" για εμφάνιση των
+                                στοιχείων του λογαριασμού σας. Σημειώστε τα και με αυτά κάνετε 'Είσοδο'.
+                            </li>
+                            <li>
+                                (B) Βρεθήκατε εδώ γιατί υπάρχει ήδη λογαριασμός για το ΑΦΜ που δώσατε. Δεδομένου ότι στην
+                                Εφαρμογή αυτή επιτρέπεται μόνο ένας λογαριασμός για κάθε ΑΦΜ, η εγγραφή ακυρώθηκε.
+                                Για να δείτε το όνομα χρήστη και κωδικό πρόσβασης, πληκτρολογείστε το ΑΦΜ σας πάλι και
+                                πατήστε 'Προβολή'. Σημειώστε τα στοιχεία που εμφανίζονται και με αυτά κάνετε 'Είσοδο'.
+                            </li>
+                        </ul>
+                        <p></p>
+                    </div>
+                    <p></p>
+                </text>);
+        })
+        )
+    </div>
+
+
+</body>
+
+</html>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

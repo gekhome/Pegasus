@@ -1,0 +1,193 @@
+﻿@model Pegasus.Models.ViewModelFreelance
+@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    Layout = null;
+}
+
+@{
+    int expID = Model.EXP_ID;
+    int aitisiID = Model.AITISI_ID;
+    string message = "Τα πεδία με * δεν καταχωρούνται. Oι τιμές εμφανίζονται μετά την ενημέρωση";
+}
+
+<style>
+    .control-label {
+        font-family: 'Segoe UI';
+        white-space: pre-line;
+    }
+
+    .page-header {
+        border-bottom: 2px solid #4F81BD;
+        font-family: 'Segoe UI';
+        font-size: x-large;
+    }
+
+    .k-textbox {
+        display: block;
+        width: 100%;
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: #555555;
+        vertical-align: middle;
+        background-color: #ffffff;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    }
+
+        .k-textbox:focus {
+            border-color: #66afe9;
+            outline: 0;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+        }
+
+    .form-horizontal .control-label {
+        text-align: left;
+    }
+
+</style>
+
+
+<div class="form-horizontal" style="margin:5px 10px 5px 10px;width:780px">
+    <div class="body-content">
+        <div class="col-md-8" style="margin-bottom:5px">
+            <label style="max-height:24px;font-style:italic;font-size:14px;color:dimgray">
+                @message
+            </label>
+        </div>
+        <table style="border:none;border-width:thin;">
+            <tr>
+                <td>
+                    <p></p>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.INCOME_YEAR, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-6" style="margin-bottom:4px">
+                        @(Html.Kendo().ComboBoxFor(m => m.INCOME_YEAR)
+                            .Name("INCOME_YEAR")
+                            .DataTextField("YEAR_TEXT")
+                            .DataValueField("YEAR_ID")
+                            .HtmlAttributes(new { style = "width:170px;" })
+                            .Placeholder("Επιλέξτε...")
+                            .Filter("contains")
+                            .AutoBind(true)
+                            .DataSource(source => { source.Read(read => { read.Action("GetIncomeYears", "AdminAitiseis"); }).ServerFiltering(true); })
+                        )
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.DATE_FROM, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-3" style="margin-bottom:4px">
+                        @Html.EditorFor(m => m.DATE_FROM, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.DATE_TO, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-3" style="margin-bottom:4px">
+                        @Html.EditorFor(m => m.DATE_TO, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.INCOME, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-3" style="margin-bottom:4px">
+                        @Html.EditorFor(m => m.INCOME, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.INCOME_TAXFREE, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-3" style="margin-bottom:4px">
+                        @Html.EditorFor(m => m.INCOME_TAXFREE, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.INCOME_NOMISMA, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(m => m.INCOME_NOMISMA, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </td>
+            </tr>
+
+            @*<tr>
+                    <td>
+                        <div class="col-md-3">
+                            @Html.LabelFor(m => m.MORIA, htmlAttributes: new { @class = "control-label" })
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-control" style="max-height:34px; background-color:#EEE">
+                                @Html.DisplayFor(m => m.MORIA, new { htmlAttributes = new { @class = "form-control" } })
+                            </label>
+                            <p></p>
+                        </div>
+                    </td>
+                </tr>*@
+
+            <tr>
+                <td>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.DOC_PROTOCOL, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-8">
+                        @Html.EditorFor(m => m.DOC_PROTOCOL, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DOC_PROTOCOL, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="col-md-3">
+                        @Html.LabelFor(m => m.DOC_ORIGIN, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-8">
+                        @Html.EditorFor(m => m.DOC_ORIGIN, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DOC_ORIGIN, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3" style="margin-top:5px">
+                        @Html.LabelFor(m => m.DOC_VALID, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-1" style="margin-top:5px">
+                        @Html.EditorFor(m => m.DOC_VALID, new { htmlAttributes = new { @class = "form-control", style = "max-height:24px" } })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="col-md-3" style="margin-top:5px">
+                        @Html.LabelFor(m => m.DOC_COMMENT, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="col-md-8" style="margin-bottom:5px">
+                        <span>@Html.TextAreaFor(m => m.DOC_COMMENT, 3, 80, htmlAttributes: new { @style = "width:480px" })</span>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+</div>

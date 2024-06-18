@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Pegasus.DAL.sqlTEACHERS_WITH_AITISEIS_UNIQUE>
+
+@{
+    ViewBag.Title = "Μητρώο Υποψηφίων";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header" style="margin:5px 20px 5px 20px">
+    <div>
+        <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+            <font style="color:#494949;font-family:'Segoe UI'">Μητρώο εκπαιδευτικών (που έχουν υποβάλει αίτηση)</font>
+        </span>
+        <span style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "Admin", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+        <button class="btn btn-primary" style="margin:0px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+    </div>
+</div>
+
+
+<div class="body-content" style="margin:10px 20px 5px 20px">
+    @(Html.Kendo().Grid(Model)
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(m => m.AFM).Title("Α.Φ.Μ.").Width(18);
+            columns.Bound(m => m.FULLNAME).Title("Ονοματεπώνυμο").Width(35);
+            columns.Bound(m => m.TELEPHONE).Title("Τηλ.Σταθερό").Width(20);
+            columns.Bound(m => m.MOBILE).Title("Τηλ.Κινητό").Width(16);
+            columns.Bound(m => m.EMAIL).Title("E-mail").Width(34);
+            columns.Bound(m => m.FULLADDRESS).Title("Διεύθυνση κατοικίας").Width(48);
+        })
+        .HtmlAttributes(new { style="font-size:13px" })
+        .Filterable()
+        .Selectable()
+        .Scrollable(scr => scr.Height(460))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(10))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .PageSize(60)
+        .ServerOperation(true)
+        .Events(events => events.Error("error_handler"))
+        .Model(model =>
+        {
+            model.Id(p => p.AFM);
+        })
+        .Read(read => read.Action("Teachers_Read", "Admin"))
+    )
+    .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+    )
+</div>
+
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+</script>

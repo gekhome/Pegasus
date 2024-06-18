@@ -1,0 +1,89 @@
+﻿@using Pegasus.Models
+
+@{
+    ViewBag.Title = "Λογαριασμοί Διαχειριστών";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@Html.AntiForgeryToken()
+<div class="page-header" style="margin:5px 60px 5px 60px">
+    <span style="margin:5px 60px 5px 60px;font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+        <font style="color:#494949;float:left;font-family:'Segoe UI'">Λογαριασμοί διαχειριστών</font>
+    </span>
+    <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "Admin", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+    <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+</div>
+<div class="body-content" style="margin:10px 60px 5px 60px">
+    @(Html.Kendo().Grid<UserAdminViewModel>()
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.USERNAME).Groupable(false).Width(40);
+            columns.Bound(c => c.PASSWORD).Groupable(false).Width(40);
+            columns.Bound(c => c.FULLNAME).Groupable(false).Width(60);
+            columns.Bound(c => c.ADMIN_LEVEL).Width(24);
+            columns.Bound(c => c.CREATEDATE).Groupable(false).Width(30).Format("{0:dd/MM/yyyy}");
+            columns.Command(command => command.Destroy().Text("Διαγραφή")).Width(32).Title("Εντολές");
+        })
+        .ToolBar(toolBar =>
+        {
+            toolBar.Create();
+            toolBar.Save();
+        })
+        .HtmlAttributes(new { style="font-size:15px" })
+        .Navigatable()
+        .Editable(editable => editable.Mode(GridEditMode.InCell))
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Filterable()
+        .Scrollable(scr => scr.Height(380))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+            .Ajax()
+            .Batch(true)
+            .PageSize(20)
+            .ServerOperation(false)
+            .Model(model => 
+            { 
+                model.Id(p => p.USER_ID); 
+            })
+            .Create("Admin_Create", "USER_ADMINS")
+            .Read("Admin_Read", "USER_ADMINS")
+            .Update("Admin_Update", "USER_ADMINS")
+            .Destroy("Admin_Destroy", "USER_ADMINS")
+            .Events(events => events.Error("error_handler"))
+        )
+    )
+</div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+        }
+        RefreshGrid(e);
+    }
+
+</script>
+
+
+
+
+
+

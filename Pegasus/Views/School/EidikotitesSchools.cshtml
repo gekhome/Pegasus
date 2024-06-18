@@ -1,0 +1,169 @@
+﻿@model IEnumerable<Pegasus.Models.ProkirixisEidikotitesViewModel>
+@using Pegasus.DAL;
+@using Pegasus.Models;
+
+@{
+    ViewBag.Title = "Αναζήτηση ειδικοτήτων";
+    Layout = "~/Views/Shared/_SchoolLayout.cshtml";
+    string schoolYear = ViewData["schoolYearText"].ToString();
+    string protocol = ViewData["prokirixiProtocol"].ToString();
+    string displayInfo = schoolYear + ": " + protocol;   
+}
+<style>
+    .k-grid {
+        font-size: 11px;
+    }
+</style>
+
+<div class="page-header" style="margin:10px 30px 5px 30px;background-color:#1D7CAE;padding:4px 4px 4px 4px;min-height:44px">
+    <label style="font-size:14px;font-weight:bold;color:white">Επιλογή προκήρυξης: </label>
+    @(Html.Kendo().DropDownList()
+        .Name("ddlProkirixi")
+        .DataTextField("PROTOCOL")
+        .DataValueField("ID")
+        .HtmlAttributes(new { style = "width:220px;font-size:14px;font-weight:600;margin-top:2px" })
+        .OptionLabel("Επιλογή ...")
+        .AutoBind(true)
+        .Enable(true)
+        .DataSource(source => { source.Read(read => { read.Action("GetProkirixeis", "School"); }); })
+    )
+    <font style="color:white;margin-left:15px;font-family:'Segoe UI';">
+        @Html.Label("", "Τρέχουσα προκήρυξη >" + displayInfo, new { @style = "font-family:'Segoe UI';font-style:normal;font-size:14px" })
+    </font>
+    <span style="margin:0px 5px 0px 5px;float:right;font-family:'Segoe UI';">@Html.ActionLink("Επιστροφή", "Index", "School", null, new { @class = "btn btn-default", style = "font-size:14px" })</span>
+    <span style="margin:0px 5px 0px 5px;float:right;font-family:'Segoe UI';">@Html.ActionLink("Εκτύπωση", "EidikotitesProkirixiPrint", "Tools", null, new { @class = "btn btn-default", style = "font-size:14px", target = "_blank" })</span>
+</div>
+
+<div class="body-content" style="margin:5px 30px 5px 30px">
+    @(Html.Kendo().Grid<EidikotitesViewModel>()
+        .Name("Master")
+        .Columns(columns =>
+        {
+            columns.Bound(m => m.EIDIKOTITA_CODE).Width(12).Filterable(false);
+            columns.Bound(m => m.EIDIKOTITA_NAME).Groupable(false).Width(50)
+                .ClientFooterTemplate("Συνολ. πλήθος: #=count#")
+                .ClientGroupFooterTemplate("Πλήθος: #=count#");
+            columns.ForeignKey(f => f.EIDIKOTITA_GROUP_ID, (IEnumerable<SYS_EIDIKOTITES_GROUPS>)ViewData["groups"], "GROUP_ID", "GROUP_TEXT").EditorTemplateName("EidikotitaGroupId").Width(50);
+        })
+        .HtmlAttributes(new { style = "font-size:13px" })
+        .Filterable()
+        .Groupable()
+        .Selectable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(260))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(true)
+        .PageSize(60)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.EIDIKOTITA_ID);
+            model.Field(p => p.EIDIKOTITA_CODE).Editable(false);
+            model.Field(p => p.EIDIKOTITA_NAME).Editable(false);
+            model.Field(p => p.EIDIKOTITA_GROUP_ID).DefaultValue(0);
+        })
+        .Read(read => read.Action("EidikotitaGroup_Read", "School"))
+        .Aggregates(a =>
+            {
+                a.Add(p => p.EIDIKOTITA_NAME).Count();
+            })
+        ) @* datasource*@
+    .Events(events => { events.Change("change"); })
+    )
+</div>
+<div class="body-content" style="margin:5px 30px 5px 30px">
+
+    @(Html.Kendo().Grid<EidikotitesInSchoolsViewModel>()
+        .Name("Child")
+        .Columns(columns =>
+        {
+            columns.Bound(m => m.SCHOOL_NAME).Width(30).Groupable(false);
+            columns.Bound(m => m.PERIFERIA_NAME).Width(50).Groupable(false);
+            columns.Bound(m => m.PERIFERIAKI).Width(60);
+        })
+        .HtmlAttributes(new { style = "font-size:14px" })
+        .Filterable()
+        .Groupable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(200))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(40)
+        .Model(model =>
+        {
+            model.Id(h => h.SCHOOL_ID);
+        })
+        .Read(read => read.Action("EidikotitesSchools_Read", "School").Data("data"))
+        .Events(events => events.Error("error_handler"))
+        )
+    )
+
+</div>
+
+<script>
+
+    function RefreshGridChild(e) {
+        var grid = $("#Child").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function RefreshGridMaster(e) {
+        var grid = $("#Master").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function change(e) {
+        var dataItem = this.dataItem(this.select());
+        var eidikotitaID = dataItem.EIDIKOTITA_ID;
+        var prokirixiID = $("#ddlProkirixi").data("kendoDropDownList").value();
+
+        if (eidikotitaID && prokirixiID) {
+            $("#Child").data("kendoGrid").dataSource.read({ prokirixiId: prokirixiID, eidikotitaId: eidikotitaID });
+        }
+        else {
+            $("#Child").data("kendoGrid").dataSource.read({ prokirixiId: 0, eidikotitaId: 0 });
+        }
+
+    }
+
+    function data() {
+        var masterGrid = $("#Master").data("kendoGrid");
+        var prokirixiID = $("#ddlProkirixi").data("kendoDropDownList").value();
+        var eidikotitaID = 0;
+
+        // get data item for selected row
+        var dataItem = masterGrid.dataItem(masterGrid.select());
+        if (dataItem)
+            eidikotitaID = dataItem.EIDIKOTITA_ID;
+
+        if (prokirixiID && eidikotitaID > 0) {
+            return { prokirixiId: prokirixiID, eidikotitaId: eidikotitaID };
+        }
+        else return { prokirixiId: 0, eidikotitaId: 0 };
+    }
+
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            MessageBoxAlert(message, "Σφάλμα");
+            $("#Child").data("kendoGrid").dataSource.read();
+        }
+    }
+
+</script>

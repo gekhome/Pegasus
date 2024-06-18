@@ -1,0 +1,68 @@
+﻿@model IEnumerable<Pegasus.Models.TaxFreeViewModel>
+@using Pegasus.Models
+
+@{
+    ViewBag.Title = "Αφορολόγητα εισοδήματα";
+    Layout = "~/Views/Shared/_SchoolLayout.cshtml";
+}
+
+    @Html.AntiForgeryToken()
+    <div class="page-header" style="margin:5px 30px 5px 30px">
+        <span style="font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+            <font style="color:#494949;float:left;font-family:'Segoe UI'">Αφορολόγητα εισοδήματα οικονομικών ετών</font>
+        </span>
+        <label style="margin-bottom:10px"></label>
+        <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "School", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+        <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+    </div>
+
+    <div class="body-content" style="margin:10px 30px 5px 30px">
+        @(Html.Kendo().Grid<TaxFreeViewModel>()
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(m => m.YEAR_TEXT).Groupable(false).Width(30)
+                .ClientFooterTemplate("Ολικό πλήθος: #=count#")
+                .ClientGroupFooterTemplate("Πλήθος: #=count#");
+            columns.Bound(m => m.TAXFREE).Groupable(false).Width(40);
+            columns.Bound(m => m.NOMISMA).Width(30);
+        })
+        .HtmlAttributes(new { style = "font-size:14px" })
+        .Filterable()
+        .Groupable()
+        .Resizable(resize => resize.Columns(true))
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(380))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(true)
+        .PageSize(60)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.YEAR_ID);
+        })
+        .Read(read => read.Action("Taxfree_Read", "School"))
+        .Aggregates(a =>
+        {
+            a.Add(p => p.YEAR_TEXT).Count();
+        })
+    ) @* datasource*@
+    )
+
+    </div>
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+</script>
+
+

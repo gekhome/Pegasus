@@ -1,0 +1,59 @@
+﻿@using Pegasus.Models
+
+@{
+    ViewBag.Title = "Αιτίες αποκλεισμού";
+    Layout = "~/Views/Shared/_SchoolLayout.cshtml";
+}
+
+<style>
+    .k-grid {
+        font-size: 12px;
+    }
+</style>
+
+<div class="page-header" style="margin:5px 30px 5px 30px">
+    <span style="margin:5px 30px 5px 30px;font-family:'Segoe UI';font-size:large;text-shadow:1px 1px #8c8c8c">
+        <font style="color:#494949;float:left;font-family:'Segoe UI'">Αιτίες Αποκλεισμού</font>
+    </span>
+    <span style="margin:5px 10px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px">@Html.ActionLink("Επιστροφή", "Index", "School", null, new { @class = "btn btn-warning", style = "font-size:14px" })</span>
+    <button class="btn btn-success" style="margin:5px 5px 5px 5px;float:right;font-family:'Segoe UI';font-size:14px" onclick="RefreshGrid()">Ανανέωση</button>
+</div>
+
+<div class="body-content" style="margin:10px 30px 5px 30px">
+    @(Html.Kendo().Grid<ApokleismoiViewModel>()
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(m => m.APOKLEISMOS_TEXT).Width(120);
+        })
+        .HtmlAttributes(new { style = "font-size:14px" })
+        .Filterable()
+        .Sortable(sortable => sortable.AllowUnsort(true).SortMode(GridSortMode.MultipleColumn))
+        .Scrollable(scr => scr.Height(420))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(datasource => datasource
+        .Ajax()
+        .Batch(true)
+        .PageSize(20)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.APOKLEISMOS_ID);
+        })
+        .Read(read => read.Action("Apokleismos_Read", "School"))
+    ) @* datasource*@
+    )
+</div>
+
+
+<script type="text/javascript">
+
+    function RefreshGrid(e) {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+</script>
